@@ -1,0 +1,15 @@
+{
+  "name": "Easy Code Check",
+  "short_name": "CodeCheck",
+  "start_url": "/code-check/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2d7ef7",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
