@@ -2615,7 +2615,7 @@ return {
 };
     }
 
-    function runCheck() {
+   function runCheck() {
   const problemId = document.getElementById("problemId").value;
   const studentCode = document.getElementById("studentCode").value;
   const resultArea = document.getElementById("result");
@@ -2624,93 +2624,87 @@ return {
     resultArea.innerHTML = "問題IDとコードを入力してください";
     return;
   }
-}
-function resetAll() {
-  document.getElementById("problemId").value = "";
-  document.getElementById("studentCode").value = "";
-  document.getElementById("result").innerHTML = "ここに結果が表示されます。";
-}
-      
+
   if (problemId === "") {
-  resultArea.innerHTML = "先にステージを選ぼう！";
-  return;
-}
+    resultArea.innerHTML = "先にステージを選ぼう！";
+    return;
+  }
 
-      const result = checkAnswer(problemId, studentCode);
+  const result = checkAnswer(problemId, studentCode);
 
-      if (result.ok) {
-        resultArea.innerHTML = "<div class=\"ok-message\">" + escapeHtml(result.message) + "</div>";
-        return;
-      }
+  if (result.ok) {
+    resultArea.innerHTML = "<div class=\"ok-message\">" + escapeHtml(result.message) + "</div>";
+    return;
+  }
 
-      if (!result.mistakes) {
-        resultArea.innerHTML = escapeHtml(result.message);
-        return;
-      }
+  if (!result.mistakes) {
+    resultArea.innerHTML = escapeHtml(result.message);
+    return;
+  }
 
-const firstMistake = result.mistakes[0];
-const diffPosFirst = getDifferencePosition(firstMistake.correct, firstMistake.student);
+  const firstMistake = result.mistakes[0];
+  const diffPosFirst = getDifferencePosition(firstMistake.correct, firstMistake.student);
 
-const correctHtmlFirst = highlightDifference(
-  firstMistake.correct,
-  diffPosFirst.start,
-  diffPosFirst.endCorrect,
-  "diff-correct"
-);
-
-const studentHtmlFirst = highlightDifference(
-  firstMistake.student,
-  diffPosFirst.start,
-  diffPosFirst.endStudent,
-  "diff-student"
-);
-
-const hintFirst = getHint(firstMistake.correct, firstMistake.student);
-
-let html = `
-  <div>${escapeHtml(result.message)}</div><br>
-  <div><strong>まずはここを直そう！</strong></div><br>
-  <div class="line-block">
-    <div>正解 : ${correctHtmlFirst}</div>
-    <div>生徒 : ${studentHtmlFirst}</div>
-    <div class="hint">ヒント: ${escapeHtml(hintFirst)}</div>
-  </div>
-`;
-
-if (result.mistakes.length > 1) {
-  html += `<br><div><strong>ほかのちがい</strong></div><br>`;
-}
-
-result.mistakes.slice(1).forEach((m) => {
-  const diffPos = getDifferencePosition(m.correct, m.student);
-
-  const correctHtml = highlightDifference(
-    m.correct,
-    diffPos.start,
-    diffPos.endCorrect,
+  const correctHtmlFirst = highlightDifference(
+    firstMistake.correct,
+    diffPosFirst.start,
+    diffPosFirst.endCorrect,
     "diff-correct"
   );
 
-  const studentHtml = highlightDifference(
-    m.student,
-    diffPos.start,
-    diffPos.endStudent,
+  const studentHtmlFirst = highlightDifference(
+    firstMistake.student,
+    diffPosFirst.start,
+    diffPosFirst.endStudent,
     "diff-student"
   );
 
-  const hint = getHint(m.correct, m.student);
+  const hintFirst = getHint(firstMistake.correct, firstMistake.student);
 
-  html += `
+  let html = `
+    <div>${escapeHtml(result.message)}</div><br>
+    <div><strong>まずはここを直そう！</strong></div><br>
     <div class="line-block">
-      <div>正解 : ${correctHtml}</div>
-      <div>生徒 : ${studentHtml}</div>
-      <div class="hint">ヒント: ${escapeHtml(hint)}</div>
+      <div>正解 : ${correctHtmlFirst}</div>
+      <div>生徒 : ${studentHtmlFirst}</div>
+      <div class="hint">ヒント: ${escapeHtml(hintFirst)}</div>
     </div>
   `;
-});
 
-      resultArea.innerHTML = html;
-    }
+  if (result.mistakes.length > 1) {
+    html += `<br><div><strong>ほかのちがい</strong></div><br>`;
+  }
+
+  result.mistakes.slice(1).forEach((m) => {
+    const diffPos = getDifferencePosition(m.correct, m.student);
+
+    const correctHtml = highlightDifference(
+      m.correct,
+      diffPos.start,
+      diffPos.endCorrect,
+      "diff-correct"
+    );
+
+    const studentHtml = highlightDifference(
+      m.student,
+      diffPos.start,
+      diffPos.endStudent,
+      "diff-student"
+    );
+
+    const hint = getHint(m.correct, m.student);
+
+    html += `
+      <div class="line-block">
+        <div>正解 : ${correctHtml}</div>
+        <div>生徒 : ${studentHtml}</div>
+        <div class="hint">ヒント: ${escapeHtml(hint)}</div>
+      </div>
+    `;
+  });
+
+  resultArea.innerHTML = html;
+}
   </script>
 </body>
 </html>
