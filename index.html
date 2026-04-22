@@ -2620,15 +2620,15 @@ return {
     const studentCode = document.getElementById("studentCode").value;
     const resultArea = document.getElementById("result");
 
-    if (!problemId || !studentCode) {
-      resultArea.innerHTML = "問題IDとコードを入力してください";
-      return;
-    }
+  if (!problemId) {
+  resultArea.innerHTML = "先にステージを選ぼう！";
+  return;
+}
 
-    if (problemId === "") {
-      resultArea.innerHTML = "先にステージを選ぼう！";
-      return;
-    }
+if (studentCode.trim() === "") {
+  resultArea.innerHTML = "コードを入力してください";
+  return;
+} 
 
     const result = checkAnswer(problemId, studentCode);
 
