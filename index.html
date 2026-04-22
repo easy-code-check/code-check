@@ -402,8 +402,8 @@
     <textarea id="studentCode" placeholder="ここに生徒のコードを貼り付ける"></textarea>
 
     <div style="text-align:left;">
-  <button onclick="checkAnswer()" style="width:100%; padding:10px;">チェック</button><br><br>
-  <button onclick="resetAll()" style="width:100%; padding:10px; background:#ccc;">リセット</button>
+  <button onclick="runCheck()">チェック</button><br><br>
+<button onclick="resetAll()" style="background:#ccc;">リセット</button>
 </div>
   </div>
 
@@ -2616,10 +2616,21 @@ return {
     }
 
     function runCheck() {
-      const problemId = document.getElementById("problemId").value;
-      const studentCode = document.getElementById("studentCode").value;
-      const resultArea = document.getElementById("result");
+  const problemId = document.getElementById("problemId").value;
+  const studentCode = document.getElementById("studentCode").value;
+  const resultArea = document.getElementById("result");
 
+  if (!problemId || !studentCode) {
+    resultArea.innerHTML = "問題IDとコードを入力してください";
+    return;
+  }
+}
+function resetAll() {
+  document.getElementById("problemId").value = "";
+  document.getElementById("studentCode").value = "";
+  document.getElementById("result").innerHTML = "ここに結果が表示されます。";
+}
+      
   if (problemId === "") {
   resultArea.innerHTML = "先にステージを選ぼう！";
   return;
