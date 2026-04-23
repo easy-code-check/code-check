@@ -112,6 +112,56 @@
       font-weight: bold;
       font-size: 18px;
     }
+    .custom-selector {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.selector-button {
+  width: 100%;
+  text-align: left;
+  background: white;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.selector-dropdown {
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.stage-item,
+.problem-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.stage-item:hover,
+.problem-item:hover {
+  background: #f0f6ff;
+}
+
+.problem-list {
+  background: #fafafa;
+}
+
+.problem-item {
+  padding-left: 24px;
+}
+
+.stage-item.active {
+  background: #eef4ff;
+  font-weight: bold;
+}
   </style>
 </head>
 <body>
@@ -119,61 +169,17 @@
   <p>問題IDを選んで、生徒の答えを貼り付けてチェックできます。</p>
 
 <div class="box">
-  <label for="stageGroup">ステージ</label>
-  <select id="stageGroup" onchange="updateProblemList()">
-    <option value="" selected disabled>選択してください</option>
-    <option value="16-1">16-1</option>
-    <option value="16-2">16-2</option>
-    <option value="16-3">16-3</option>
-    <option value="16-4">16-4</option>
-    <option value="17-1">17-1</option>
-    <option value="17-2">17-2</option>
-    <option value="17-3">17-3</option>
-    <option value="17-4">17-4</option>
-    <option value="18-1">18-1</option>
-    <option value="18-2">18-2</option>
-    <option value="18-3">18-3</option>
-    <option value="19-1">19-1</option>
-    <option value="19-2">19-2</option>
-    <option value="19-3">19-3</option>
-    <option value="19-4">19-4</option>
-    <option value="20-1">20-1</option>
-    <option value="20-2">20-2</option>
-    <option value="20-3">20-3</option>
-    <option value="20-4">20-4</option>
-    <option value="21-1">21-1</option>
-    <option value="21-2">21-2</option>
-    <option value="21-3">21-3</option>
-    <option value="22-1">22-1</option>
-    <option value="22-2">22-2</option>
-    <option value="22-3">22-3</option>
-    <option value="23-1">23-1</option>
-    <option value="23-2">23-2</option>
-    <option value="23-3">23-3</option>
-    <option value="24-1">24-1</option>
-    <option value="24-2">24-2</option>
-    <option value="24-3">24-3</option>
-    <option value="25-1">25-1</option>
-    <option value="26-1">26-1</option>
-    <option value="26-2">26-2</option>
-    <option value="27-1">27-1</option>
-    <option value="27-2">27-2</option>
-    <option value="28-1">28-1</option>
-    <option value="28-2">28-2</option>
-    <option value="28-3">28-3</option>
-    <option value="28-4">28-4</option>
-    <option value="28-5">28-5</option>
-    <option value="29-1">29-1</option>
-    <option value="29-2">29-2</option>
-    <option value="29-3">29-3</option>
-    <option value="29-4">29-4</option>
-    <option value="29-5">29-5</option>
-  </select>
+  <label>問題ID</label>
 
-  <label for="problemId">問題ID</label>
-  <select id="problemId">
-    <option value="" selected disabled>先にステージを選択してください</option>
-  </select>
+  <div id="problemSelector" class="custom-selector">
+    <button type="button" id="selectorButton" class="selector-button" onclick="toggleStageList()">
+      選択してください
+    </button>
+
+    <div id="stageList" class="selector-dropdown" style="display: none;"></div>
+  </div>
+
+  <input type="hidden" id="problemId" value="">
 
   <label for="studentCode">生徒の解答</label>
   <textarea id="studentCode" placeholder="ここに生徒のコードを貼り付ける"></textarea>
@@ -2440,124 +2446,156 @@ const problemGroups = {
   "29-5": ["29-5-1", "29-5-2", "29-5-3", "29-5-4"]
 };
 
-function updateProblemList() {
-  const stage = document.getElementById("stageGroup").value;
-  const problemSelect = document.getElementById("problemId");
+let openStage = null;
 
-  problemSelect.innerHTML = "";
+function toggleStageList() {
+  const stageList = document.getElementById("stageList");
+  if (stageList.style.display === "none") {
+    stageList.style.display = "block";
+    renderStageList();
+  } else {
+    stageList.style.display = "none";
+  }
+}
 
-  const firstOption = document.createElement("option");
-  firstOption.value = "";
-  firstOption.textContent = "問題を選択してください";
-  firstOption.disabled = true;
-  firstOption.selected = true;
-  problemSelect.appendChild(firstOption);
+function renderStageList() {
+  const stageList = document.getElementById("stageList");
+  stageList.innerHTML = "";
 
-  if (!problemGroups[stage]) return;
+  Object.keys(problemGroups).forEach(stage => {
+    const stageDiv = document.createElement("div");
+    stageDiv.className = "stage-item";
+    stageDiv.textContent = stage;
 
-  problemGroups[stage].forEach((problemId) => {
-    const option = document.createElement("option");
-    option.value = problemId;
-    option.textContent = problemId;
-    problemSelect.appendChild(option);
+    stageDiv.onclick = () => {
+      openStage = openStage === stage ? null : stage;
+      renderStageList();
+    };
+
+    stageList.appendChild(stageDiv);
+
+    if (openStage === stage) {
+      problemGroups[stage].forEach(p => {
+        const pDiv = document.createElement("div");
+        pDiv.className = "problem-item";
+        pDiv.textContent = p;
+
+        pDiv.onclick = (e) => {
+          e.stopPropagation();
+          selectProblem(p);
+        };
+
+        stageList.appendChild(pDiv);
+      });
+    }
   });
 }
-  function runCheck() {
-    const problemId = document.getElementById("problemId").value;
-    const studentCode = document.getElementById("studentCode").value;
-    const resultArea = document.getElementById("result");
 
-  if (!problemId) {
-  resultArea.innerHTML = "先にステージを選ぼう！";
-  return;
+function selectProblem(problemId) {
+  document.getElementById("problemId").value = problemId;
+  document.getElementById("selectorButton").textContent = problemId;
+  document.getElementById("stageList").style.display = "none";
+  openStage = null;
 }
 
-if (studentCode.trim() === "") {
-  resultArea.innerHTML = "コードを入力してください";
-  return;
-} 
+function runCheck() {
+  const problemId = document.getElementById("problemId").value;
+  const studentCode = document.getElementById("studentCode").value;
+  const resultArea = document.getElementById("result");
 
-    const result = checkAnswer(problemId, studentCode);
+  if (!problemId) {
+    resultArea.innerHTML = "先に問題を選ぼう！";
+    return;
+  }
 
-    if (result.ok) {
-      resultArea.innerHTML = "<div class=\"ok-message\">" + escapeHtml(result.message) + "</div>";
-      return;
-    }
+  if (studentCode.trim() === "") {
+    resultArea.innerHTML = "コードを入力してください";
+    return;
+  }
 
-    if (!result.mistakes) {
-      resultArea.innerHTML = escapeHtml(result.message);
-      return;
-    }
+  const result = checkAnswer(problemId, studentCode);
 
-    const firstMistake = result.mistakes[0];
-    const diffPosFirst = getDifferencePosition(firstMistake.correct, firstMistake.student);
+  if (result.ok) {
+    resultArea.innerHTML = "<div class=\"ok-message\">" + escapeHtml(result.message) + "</div>";
+    return;
+  }
 
-    const correctHtmlFirst = highlightDifference(
-      firstMistake.correct,
-      diffPosFirst.start,
-      diffPosFirst.endCorrect,
+  if (!result.mistakes) {
+    resultArea.innerHTML = escapeHtml(result.message);
+    return;
+  }
+
+  const firstMistake = result.mistakes[0];
+  const diffPosFirst = getDifferencePosition(firstMistake.correct, firstMistake.student);
+
+  const correctHtmlFirst = highlightDifference(
+    firstMistake.correct,
+    diffPosFirst.start,
+    diffPosFirst.endCorrect,
+    "diff-correct"
+  );
+
+  const studentHtmlFirst = highlightDifference(
+    firstMistake.student,
+    diffPosFirst.start,
+    diffPosFirst.endStudent,
+    "diff-student"
+  );
+
+  const hintFirst = getHint(firstMistake.correct, firstMistake.student);
+
+  let html = `
+    <div>${escapeHtml(result.message)}</div><br>
+    <div><strong>まずはここを直そう！</strong></div><br>
+    <div class="line-block">
+      <div>正解 : ${correctHtmlFirst}</div>
+      <div>生徒 : ${studentHtmlFirst}</div>
+      <div class="hint">ヒント: ${escapeHtml(hintFirst)}</div>
+    </div>
+  `;
+
+  if (result.mistakes.length > 1) {
+    html += `<br><div><strong>ほかのちがい</strong></div><br>`;
+  }
+
+  result.mistakes.slice(1).forEach((m) => {
+    const diffPos = getDifferencePosition(m.correct, m.student);
+
+    const correctHtml = highlightDifference(
+      m.correct,
+      diffPos.start,
+      diffPos.endCorrect,
       "diff-correct"
     );
 
-    const studentHtmlFirst = highlightDifference(
-      firstMistake.student,
-      diffPosFirst.start,
-      diffPosFirst.endStudent,
+    const studentHtml = highlightDifference(
+      m.student,
+      diffPos.start,
+      diffPos.endStudent,
       "diff-student"
     );
 
-    const hintFirst = getHint(firstMistake.correct, firstMistake.student);
+    const hint = getHint(m.correct, m.student);
 
-    let html = `
-      <div>${escapeHtml(result.message)}</div><br>
-      <div><strong>まずはここを直そう！</strong></div><br>
+    html += `
       <div class="line-block">
-        <div>正解 : ${correctHtmlFirst}</div>
-        <div>生徒 : ${studentHtmlFirst}</div>
-        <div class="hint">ヒント: ${escapeHtml(hintFirst)}</div>
+        <div>正解 : ${correctHtml}</div>
+        <div>生徒 : ${studentHtml}</div>
+        <div class="hint">ヒント: ${escapeHtml(hint)}</div>
       </div>
     `;
+  });
 
-    if (result.mistakes.length > 1) {
-      html += `<br><div><strong>ほかのちがい</strong></div><br>`;
-    }
-
-    result.mistakes.slice(1).forEach((m) => {
-      const diffPos = getDifferencePosition(m.correct, m.student);
-
-      const correctHtml = highlightDifference(
-        m.correct,
-        diffPos.start,
-        diffPos.endCorrect,
-        "diff-correct"
-      );
-
-      const studentHtml = highlightDifference(
-        m.student,
-        diffPos.start,
-        diffPos.endStudent,
-        "diff-student"
-      );
-
-      const hint = getHint(m.correct, m.student);
-
-      html += `
-        <div class="line-block">
-          <div>正解 : ${correctHtml}</div>
-          <div>生徒 : ${studentHtml}</div>
-          <div class="hint">ヒント: ${escapeHtml(hint)}</div>
-        </div>
-      `;
-    });
-
-    resultArea.innerHTML = html;
-  }
-
-  function resetAll() {
-    document.getElementById("problemId").selectedIndex = 0;
-    document.getElementById("studentCode").value = "";
-    document.getElementById("result").innerHTML = "ここに結果が表示されます。";
-  }
+  resultArea.innerHTML = html;
+}
+function resetAll() {
+  document.getElementById("problemId").value = "";
+  document.getElementById("selectorButton").textContent = "選択してください";
+  document.getElementById("stageList").style.display = "none";
+  document.getElementById("studentCode").value = "";
+  document.getElementById("result").innerHTML = "ここに結果が表示されます。";
+  openStage = null;
+}
 </script>
 </body>
 </html>
