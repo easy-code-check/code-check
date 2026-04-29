@@ -7907,14 +7907,468 @@ character.ay = 500`,
   "27-1-1": ``, "27-1-2": ``, "27-1-3": ``, "27-1-4": ``,
   "27-2-1": ``, "27-2-2": ``, "27-2-3": ``, "27-2-4": ``,
 
-  "28-1-1": ``, "28-1-2": ``, "28-1-3": ``, "28-1-4": ``,
-  "28-2-1": ``, "28-2-2": ``, "28-2-3": ``, "28-2-4": ``,
-  "28-3-1": ``, "28-3-2": ``, "28-3-3": ``, "28-3-4": ``,
+  "28-1-1": ``,
+  "28-1-2": `let turret = sprites.create(assets.image\`turret\`)
+let shotSight = sprites.create(assets.image\`shotSight\`)
+turret.setPosition(80,112)
+shotSight.setPosition(80,112)`,
+  "28-1-3": `let turret = sprites.create(assets.image\`turret\`)
+let shotSight = sprites.create(assets.image\`shotSight\`)
+turret.setPosition(80,112)
+shotSight.setPosition(80,112)
+
+let turretDegrees = 90
+
+function computeVector(degrees: number){
+    let radians = (degrees / 180) * Math.PI
+    let vx = Math.cos(radians)
+    let vy = -Math.sin(radians)
+    return {x: vx, y: vy}
+}
+
+let v = computeVector(turretDegrees)
+let vx = v.x * 10.0
+let vy = v.y * 10.0
+shotSight.setPosition(turret.x + vx,turret.y + vy)`,
+  "28-1-4": `let turret = sprites.create(assets.image\`turret\`)
+let shotSight = sprites.create(assets.image\`shotSight\`)
+turret.setPosition(80,112)
+shotSight.setPosition(80,112)
+
+let turretDegrees = 90
+
+function computeVector(degrees: number){
+    let radians = (degrees / 180) * Math.PI
+    let vx = Math.cos(radians)
+    let vy = -Math.sin(radians)
+    return {x: vx, y: vy}
+}
+
+loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+    
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx,turret.y + vy)
+
+    loops.pause(60)
+    })`,
+  "28-2-1": `const turret = sprites.create(assets.image\`turret\`);
+const shotSight = sprites.create(assets.image\`shotSight\`);
+turret.setPosition(80, 112);
+shotSight.setPosition(80, 112);
+
+let turretDegrees = 90
+
+function computeVector(degrees: number) {
+    const radians = (degrees / 180) * Math.PI;
+    const vx = Math.cos(radians);
+    const vy = -Math.sin(radians);
+    return { x: vx, y: vy };
+}
+
+loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+
+    loops.pause(60)
+})
+loops.forever(function (){
+    if (!controller.A.isPressed())
+        return
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 60.0
+    let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx ,vy)
+    loops.pause(1500)
+})`,
+  "28-2-2": `const turret = sprites.create(assets.image\`turret\`);
+const shotSight = sprites.create(assets.image\`shotSight\`);
+turret.setPosition(80, 112);
+shotSight.setPosition(80, 112);
+
+let turretDegrees = 90
+
+function computeVector(degrees: number) {
+    const radians = (degrees / 180) * Math.PI;
+    const vx = Math.cos(radians);
+    const vy = -Math.sin(radians);
+    return { x: vx, y: vy };
+}
+
+loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+
+    loops.pause(60)
+})
+loops.forever(function (){
+    if (!controller.A.isPressed())
+        return
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 60.0
+    let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx ,vy)
+    loops.pause(1500)
+})
+loops.forever(function(){
+    let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    loops.pause(2000)
+})`,
+  "28-2-3": `const turret = sprites.create(assets.image\`turret\`);
+const shotSight = sprites.create(assets.image\`shotSight\`);
+turret.setPosition(80, 112);
+shotSight.setPosition(80, 112);
+
+let turretDegrees = 90
+
+info.setScore(0)
+
+function computeVector(degrees: number) {
+    const radians = (degrees / 180) * Math.PI;
+    const vx = Math.cos(radians);
+    const vy = -Math.sin(radians);
+    return { x: vx, y: vy };
+}
+
+loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+
+    loops.pause(60)
+})
+loops.forever(function (){
+    if (!controller.A.isPressed())
+        return
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 60.0
+    let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx ,vy)
+    loops.pause(1500)
+})
+loops.forever(function(){
+    let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    loops.pause(2000)
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function(sprite: Sprite, otherSprite: Sprite){
+    otherSprite.destroy()
+           info.changeScoreBy(15)
+})`,
+  "28-2-4": ``,
+  "28-3-1": `const turret = sprites.create(assets.image\`turret\`);
+const shotSight = sprites.create(assets.image\`shotSight\`);
+turret.setPosition(80, 112);
+shotSight.setPosition(80, 112);
+
+let turretDegrees = 90
+
+info.setScore(0)
+
+function computeVector(degrees: number) {
+    const radians = (degrees / 180) * Math.PI;
+    const vx = Math.cos(radians);
+    const vy = -Math.sin(radians);
+    return { x: vx, y: vy };
+}
+
+loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+
+    loops.pause(60)
+})
+loops.forever(function (){
+    if (!controller.A.isPressed())
+        return
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 60.0
+    let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx ,vy)
+    loops.pause(1500)
+})
+loops.forever(function(){
+    let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    enemy.setFlag(SpriteFlag.AutoDestroy, true)
+    loops.pause(2000)
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function(sprite: Sprite, otherSprite: Sprite){
+    otherSprite.destroy()
+    info.changeScoreBy(15)
+})
+sprites.onDestroyed(SpriteKind.Enemy, function (sprite){
+    if (sprite.y > 120)
+        info.changeScoreBy(-10)
+})
+game.onUpdate(function (){
+    if (info.score() <= -50)
+        game.over()
+})`,
+  "28-3-2": `const shotSight = sprites.create(assets.image\`shotSight\`);
+turret.setPosition(80, 112);
+shotSight.setPosition(80, 112);
+
+let turretDegrees = 90
+
+let upgradeItems: Sprite[] = []
+let upgradeItemIcons = [
+    assets.image\`fireRateUpgrade\`,
+    assets.image\`enemySpawnRateUpgrade\`,
+    assets.image\`wobbleUpgrade\`,
+    assets.image\`controlUpgrade\`,
+]
+info.setScore(0)
+
+function computeVector(degrees: number) {
+    const radians = (degrees / 180) * Math.PI;
+    const vx = Math.cos(radians);
+    const vy = -Math.sin(radians);
+    return { x: vx, y: vy };
+}
+
+loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+
+    loops.pause(60)
+})
+loops.forever(function (){
+    if (!controller.A.isPressed())
+        return
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 60.0
+    let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx ,vy)
+    loops.pause(1500)
+})
+loops.forever(function(){
+    let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    enemy.setFlag(SpriteFlag.AutoDestroy, true)
+    loops.pause(2000)
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function(sprite: Sprite, otherSprite: Sprite){
+    otherSprite.destroy()
+    info.changeScoreBy(15)
+})
+sprites.onDestroyed(SpriteKind.Enemy, function (sprite){
+    if (sprite.y > 120)
+        info.changeScoreBy(-10)
+})
+game.onUpdate(function (){
+    if (info.score() <= -50)
+        game.over()
+})
+function initializeUpgradeItems(){
+    for (let i = 0; i < upgradeItemIcons.length; ++i) {
+         let upgradeItem = sprites.create(upgradeItemIcons[i])
+        upgradeItem.setPosition(10, 10 + i * 16)
+        upgradeItems.push(upgradeItem)
+    }
+}
+initializeUpgradeItems()`,
+  "28-3-3": ``, 
+  "28-3-4": ``,
   "28-4-1": ``, "28-4-2": ``, "28-4-3": ``, "28-4-4": ``,
   "28-5-1": ``, "28-5-2": ``, "28-5-3": ``, "28-5-4": ``,
 
-  "29-1-1": ``, "29-1-2": ``, "29-1-3": ``, "29-1-4": ``,
-  "29-2-1": ``, "29-2-2": ``, "29-2-3": ``, "29-2-4": ``,
+  "29-1-1": ``,
+  "29-1-2": `scene.setTileMapLevel(assets.tilemap\`ステージa\`)
+
+let cursor = sprites.create(assets.image\`cursor\`)
+let cursorColumn = 0
+let cursorRow = 0
+
+tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))`,
+  "29-1-3": `let setTileMapLevel = assets.tilemap\`ステージa\`
+let tilemapWidth = setTileMapLevel.width
+let tilemapHeight = setTileMapLevel.height
+scene.setTileMapLevel(setTileMapLevel)
+
+let cursor = sprites.create(assets.image\`cursor\`)
+let cursorColumn = 0
+let cursorRow = 0
+
+game.onUpdate(function() {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function() {
+    cursorColumn -= 1
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+})`,
+  "29-1-4": `let setTileMapLevel = assets.tilemap\`ステージa\`
+let tilemapWidth = setTileMapLevel.width
+let tilemapHeight = setTileMapLevel.height
+
+let level = 0
+
+let cursor = sprites.create(assets.image\`cursor\`)
+let cursorColumn = 0
+let cursorRow = 0
+
+function initializeStage(level: number) {
+    let levels = [assets.tilemap\`ステージa\`, assets.tilemap\`ステージb\`, assets.tilemap\`ステージc\`, assets.tilemap\`ステージd\`, assets.tilemap\`ステージe\`, assets.tilemap\`ステージf\`]
+    if (level >= levels.length)
+        game.over(true)
+    let setTileMapLevel = levels[level]
+    let tilemapWidth = setTileMapLevel.width
+    let tilemapHeight = setTileMapLevel.height
+
+    scene.setTileMapLevel(setTileMapLevel)
+}
+game.onUpdate(function() {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function() {
+    cursorColumn -= 1
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+})
+game.onUpdateInterval(1000, function () {
+    if (tiles.getTilesByType(assets.tile\`lightOff\`).length > 0)
+        return
+    level += 1
+    initializeStage(level)
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function() {
+    level += 1
+    initializeStage(level)
+})
+
+initializeStage(level)`,
+  "29-2-1": `let setTileMapLevel = assets.tilemap\`ステージa\`
+let tilemapWidth = setTileMapLevel.width
+let tilemapHeight = setTileMapLevel.height
+
+let level = 0
+
+let cursor = sprites.create(assets.image\`cursor\`)
+let cursorColumn = 0
+let cursorRow = 0
+
+let tileKind = {
+       wireOff: assets.tile\`wireOff\`,
+       wireOn: assets.tile\`wireOn\`,
+       lightOff: assets.tile\`lightOff\`,
+       lightOn: assets.tile\`lightOn\`,  
+       switchOff: assets.tile\`switchOff\`,
+       switchOn: assets.tile\`switchOn\`,
+}
+function initializeStage(level: number) {
+    let levels = [assets.tilemap\`ステージa\`, assets.tilemap\`ステージb\`, assets.tilemap\`ステージc\`, assets.tilemap\`ステージd\`, assets.tilemap\`ステージe\`, assets.tilemap\`ステージf\`]
+    if (level >= levels.length)
+        game.over(true)
+    let setTileMapLevel = levels[level]
+    let tilemapWidth = setTileMapLevel.width
+    let tilemapHeight = setTileMapLevel.height
+
+    scene.setTileMapLevel(setTileMapLevel)
+}
+game.onUpdate(function() {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function() {
+    cursorColumn -= 1
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+})
+game.onUpdateInterval(1000, function () {
+    if (tiles.getTilesByType(tileKind.lightOff).length > 0)
+        return
+    level += 1
+    initializeStage(level)
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function() {
+    level += 1
+    initializeStage(level)
+})
+
+initializeStage(level)`,
+  "29-2-2": ``,
+  "29-2-3": ``,
+  "29-2-4": ``,
   "29-3-1": ``, "29-3-2": ``, "29-3-3": ``, "29-3-4": ``,
   "29-4-1": ``, "29-4-2": ``, "29-4-3": ``, "29-4-4": ``,
   "29-5-1": ``, "29-5-2": ``, "29-5-3": ``, "29-5-4": ``,
