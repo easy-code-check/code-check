@@ -7991,10 +7991,335 @@ game.onUpdateInterval(500, function () {
     }
     progress += 1
 })`,
-  "22-2-1": ``,
-  "22-2-2": ``,
-  "22-2-3": ``,
-  "22-2-4": ``,
+  "22-2-1": `controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (mySprite2.scale < 4) {
+        combo += 1
+        info.changeScoreBy(combo * 10)
+    } else {
+        resetCombo()
+    }
+    hideNotes()
+})
+function resetCombo () {
+    combo = 0
+    mySprite3 = sprites.create(assets.image\`コンボ切れ0\`, SpriteKind.Player)
+    mySprite3.lifespan = 100
+}
+function hideNotes () {
+    mySprite2.scale = 10000
+    sprites.destroy(mySprite2)
+}
+let mySprite3: Sprite = null
+let mySprite2: Sprite = null
+let combo = 0
+info.setScore(0)
+combo = 0
+let mySprite = sprites.create(assets.image\`当たり判定の箱0\`, SpriteKind.Player)
+mySprite.scale = 1.5
+let 配列 = [
+1,
+0,
+1,
+0,
+0,
+1,
+1,
+1
+]
+let progress = 0
+game.onUpdate(function () {
+    mySprite2.scale += -0.5
+    if (mySprite2.scale < mySprite.scale) {
+        resetCombo()
+        hideNotes()
+    }
+})
+game.onUpdateInterval(500, function () {
+    if (配列[progress] == 1) {
+        mySprite2 = sprites.create(assets.image\`ノーツ\`, SpriteKind.Player)
+        mySprite2.scale = 12
+    }
+    progress += 1
+})
+`,
+  "22-2-2": `controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    music.setVolume(255)
+    if (mySprite2.scale < 4) {
+        combo += 1
+        music.play(music.melodyPlayable(music.magicWand), music.PlaybackMode.InBackground)
+        info.changeScoreBy(combo * 10)
+    } else {
+        resetCombo()
+    }
+    hideNotes()
+})
+function resetCombo () {
+    combo = 0
+    mySprite3 = sprites.create(assets.image\`コンボ切れ0\`, SpriteKind.Player)
+    mySprite3.lifespan = 100
+    music.play(music.melodyPlayable(music.buzzer), music.PlaybackMode.InBackground)
+}
+function hideNotes () {
+    mySprite2.scale = 10000
+    sprites.destroy(mySprite2)
+}
+let mySprite3: Sprite = null
+let mySprite2: Sprite = null
+let combo = 0
+info.setScore(0)
+combo = 0
+let mySprite = sprites.create(assets.image\`当たり判定の箱0\`, SpriteKind.Player)
+mySprite.scale = 1.5
+let 配列 = [
+1,
+0,
+1,
+0,
+0,
+1,
+1,
+1
+]
+let progress = 0
+game.onUpdate(function () {
+    mySprite2.scale += -0.5
+    if (mySprite2.scale < mySprite.scale) {
+        resetCombo()
+        hideNotes()
+    }
+})
+game.onUpdateInterval(500, function () {
+    if (配列[progress] == 1) {
+        mySprite2 = sprites.create(assets.image\`ノーツ\`, SpriteKind.Player)
+        mySprite2.scale = 12
+    }
+    progress += 1
+    if (progress > 配列.length) {
+        game.gameOver(true)
+    }
+})
+`,
+  "22-2-3": `controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(3)
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(5)
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(4)
+})
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(1)
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(2)
+})
+function resetCombo () {
+    combo = 0
+    mySprite3 = sprites.create(assets.image\`コンボ切れ0\`, SpriteKind.Player)
+    mySprite3.lifespan = 100
+    music.play(music.melodyPlayable(music.buzzer), music.PlaybackMode.InBackground)
+}
+function hideNotes () {
+    mySprite2.scale = 10000
+    sprites.destroy(mySprite2)
+}
+function hitNotes (button: number) {
+    music.setVolume(255)
+    if (mySprite2.scale < 4) {
+        if (notesType == 1) {
+            addScore()
+        } else {
+            if (notesType == button) {
+                addScore()
+            } else {
+                resetCombo()
+            }
+        }
+    } else {
+        resetCombo()
+    }
+    hideNotes()
+}
+function addScore () {
+    combo += 1
+    music.play(music.melodyPlayable(music.magicWand), music.PlaybackMode.InBackground)
+    info.changeScoreBy(combo * 10)
+}
+let mySprite2: Sprite = null
+let mySprite3: Sprite = null
+let notesType = 0
+let combo = 0
+info.setScore(0)
+combo = 0
+let mySprite = sprites.create(assets.image\`当たり判定の箱0\`, SpriteKind.Player)
+mySprite.scale = 1.5
+let 配列 = [
+1,
+0,
+1,
+0,
+0,
+1,
+1,
+1,
+0,
+2,
+0,
+3,
+0,
+4,
+0,
+5,
+0
+]
+let progress = 0
+notesType = 0
+game.onUpdate(function () {
+    mySprite2.scale += -0.5
+    if (mySprite2.scale < mySprite.scale) {
+        resetCombo()
+        hideNotes()
+    }
+})
+game.onUpdateInterval(500, function () {
+    if (配列[progress] == 1) {
+        mySprite2 = sprites.create(assets.image\`ノーツ\`, SpriteKind.Player)
+    } else if (配列[progress] == 2) {
+        mySprite2 = sprites.create(assets.image\`ノーツ左\`, SpriteKind.Player)
+    } else if (配列[progress] == 3) {
+        mySprite2 = sprites.create(assets.image\`ノーツ下\`, SpriteKind.Player)
+    } else if (配列[progress] == 4) {
+        mySprite2 = sprites.create(assets.image\`ノーツ上\`, SpriteKind.Player)
+    } else if (配列[progress] == 5) {
+        mySprite2 = sprites.create(assets.image\`ノーツ右\`, SpriteKind.Player)
+    }
+    if (配列[progress] != 0) {
+        mySprite2.scale = 12
+    }
+    notesType = 配列[progress]
+    progress += 1
+    if (progress > 配列.length) {
+        game.gameOver(true)
+    }
+})
+`,
+  "22-2-4": `controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(3)
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(5)
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(7)
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(4)
+})
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(6)
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    hitNotes(2)
+})
+function resetCombo () {
+    combo = 0
+    mySprite3 = sprites.create(assets.image\`コンボ切れ0\`, SpriteKind.Player)
+    mySprite3.lifespan = 100
+    music.play(music.melodyPlayable(music.buzzer), music.PlaybackMode.InBackground)
+}
+function hideNotes () {
+    mySprite2.scale = 10000
+    sprites.destroy(mySprite2)
+}
+function hitNotes (button: number) {
+    music.setVolume(255)
+    if (mySprite2.scale < 4) {
+        if (notesType == 1) {
+            addScore()
+        } else {
+            if (notesType == button) {
+                addScore()
+            } else {
+                resetCombo()
+            }
+        }
+    } else {
+        resetCombo()
+    }
+    hideNotes()
+}
+function addScore () {
+    combo += 1
+    music.play(music.melodyPlayable(music.magicWand), music.PlaybackMode.InBackground)
+    info.changeScoreBy(combo * 10)
+}
+let mySprite2: Sprite = null
+let mySprite3: Sprite = null
+let notesType = 0
+let combo = 0
+info.setScore(0)
+combo = 0
+let mySprite = sprites.create(assets.image\`当たり判定の箱0\`, SpriteKind.Player)
+mySprite.scale = 1.5
+let 配列 = [
+1,
+0,
+1,
+0,
+0,
+1,
+1,
+1,
+0,
+2,
+0,
+3,
+0,
+4,
+0,
+5,
+0,
+6,
+0,
+7,
+0
+]
+let progress = 0
+notesType = 0
+game.onUpdate(function () {
+    mySprite2.scale += -0.5
+    if (mySprite2.scale < mySprite.scale) {
+        resetCombo()
+        hideNotes()
+    }
+})
+game.onUpdateInterval(500, function () {
+    if (配列[progress] == 1) {
+        mySprite2 = sprites.create(assets.image\`ノーツ\`, SpriteKind.Player)
+    } else if (配列[progress] == 2) {
+        mySprite2 = sprites.create(assets.image\`ノーツ左\`, SpriteKind.Player)
+    } else if (配列[progress] == 3) {
+        mySprite2 = sprites.create(assets.image\`ノーツ下\`, SpriteKind.Player)
+    } else if (配列[progress] == 4) {
+        mySprite2 = sprites.create(assets.image\`ノーツ上\`, SpriteKind.Player)
+    } else if (配列[progress] == 5) {
+        mySprite2 = sprites.create(assets.image\`ノーツ右\`, SpriteKind.Player)
+    } else if (配列[progress] == 6) {
+        mySprite2 = sprites.create(assets.image\`ノーツA\`, SpriteKind.Player)
+    } else if (配列[progress] == 7) {
+        mySprite2 = sprites.create(assets.image\`ノーツB\`, SpriteKind.Player)
+    }
+    if (配列[progress] != 0) {
+        mySprite2.scale = 12
+    }
+    notesType = 配列[progress]
+    progress += 1
+    if (progress > 配列.length) {
+        game.gameOver(true)
+    }
+})
+`,
   "22-3-1": ``, "22-3-2": ``, "22-3-3": ``, "22-3-4": ``,
 
   "23-1-1": `let mySprite = sprites.create(assets.image\`myImage0\`, SpriteKind.Player)
@@ -8344,10 +8669,6 @@ game.onUpdateInterval(100, function () {
     }
 })
 `,
-  "23-3-1": ``,
-  "23-3-2": ``, 
-  "23-3-3": ``,
-  "23-3-4": ``,
 
   "24-1-1": `controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     mySprite.setPosition(60, -15)
