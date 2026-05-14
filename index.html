@@ -8349,9 +8349,311 @@ game.onUpdateInterval(100, function () {
   "23-3-3": ``,
   "23-3-4": ``,
 
-  "24-1-1": ``, "24-1-2": ``, "24-1-3": ``, "24-1-4": ``,
-  "24-2-1": ``, "24-2-2": ``, "24-2-3": ``, "24-2-4": ``,
-  "24-3-1": ``, "24-3-2": ``, "24-3-3": ``, "24-3-4": ``,
+  "24-1-1": `controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    mySprite.setPosition(60, -15)
+    mySprite.vy = 200
+})
+let mySprite: Sprite = null
+scene.setBackgroundColor(12)
+scene.setBackgroundImage(assets.image\`myImage0\`)
+mySprite = sprites.create(assets.image\`thunderbolt0\`, SpriteKind.Player)
+mySprite.setPosition(0, -15)`,
+  "24-1-2": `function hideThunderbolt () {
+    mySprite.setPosition(0, -15)
+    mySprite.vy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    mySprite.setPosition(60, -15)
+    mySprite.vy = 200
+})
+let mySprite: Sprite = null
+scene.setBackgroundColor(12)
+scene.setBackgroundImage(assets.image\`myImage0\`)
+mySprite = sprites.create(assets.image\`thunderbolt0\`, SpriteKind.Player)
+hideThunderbolt()
+animation.runImageAnimation(
+mySprite,
+assets.animation\`thunderboltAnimation0\`,
+200,
+true
+)
+game.onUpdate(function () {
+    if (mySprite.y > 60) {
+        hideThunderbolt()
+    }
+})
+`,
+  "24-1-3": `function hideThunderbolt () {
+    mySprite.setPosition(0, -15)
+    mySprite.vy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (canSpawnThunderbolt == 1) {
+        canSpawnThunderbolt = 0
+        pause(500)
+        mySprite.setPosition(60, -15)
+        mySprite.vy = 200
+    }
+})
+let canSpawnThunderbolt = 0
+let mySprite: Sprite = null
+scene.setBackgroundColor(12)
+scene.setBackgroundImage(assets.image\`myImage0\`)
+mySprite = sprites.create(assets.image\`thunderbolt0\`, SpriteKind.Player)
+hideThunderbolt()
+animation.runImageAnimation(
+mySprite,
+assets.animation\`thunderboltAnimation0\`,
+200,
+true
+)
+canSpawnThunderbolt = 1
+game.onUpdate(function () {
+    if (mySprite.y > 60) {
+        canSpawnThunderbolt = 1
+        hideThunderbolt()
+    }
+})`,
+  "24-1-4": `sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    canSpawnThunderbolt = 1
+    hideThunderbolt()
+})
+function hideThunderbolt () {
+    mySprite.setPosition(0, -15)
+    mySprite.vy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (canSpawnThunderbolt == 1) {
+        canSpawnThunderbolt = 0
+        pause(500)
+        mySprite.setPosition(60, -15)
+        mySprite.vy = 200
+    }
+})
+let canSpawnThunderbolt = 0
+let mySprite: Sprite = null
+scene.setBackgroundColor(12)
+scene.setBackgroundImage(assets.image\`myImage0\`)
+mySprite = sprites.create(assets.image\`thunderbolt0\`, SpriteKind.Player)
+hideThunderbolt()
+animation.runImageAnimation(
+mySprite,
+assets.animation\`thunderboltAnimation0\`,
+200,
+true
+)
+canSpawnThunderbolt = 1
+let mySprite2 = sprites.create(assets.image\`cloud0\`, SpriteKind.Enemy)
+mySprite2.setPosition(60, 40)
+game.onUpdate(function () {
+    if (mySprite.y > 60) {
+        canSpawnThunderbolt = 1
+        hideThunderbolt()
+    }
+})`,
+  "24-2-1": `sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    canSpawnThunderbolt = 1
+    hideThunderbolt()
+})
+function hideThunderbolt () {
+    mySprite.setPosition(0, -15)
+    mySprite.vy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (canSpawnThunderbolt == 1) {
+        canSpawnThunderbolt = 0
+        pause(500)
+        mySprite.setPosition(60, -15)
+        mySprite.vy = 200
+    }
+})
+let mySprite2: Sprite = null
+let canSpawnThunderbolt = 0
+let mySprite: Sprite = null
+scene.setBackgroundColor(12)
+scene.setBackgroundImage(assets.image\`myImage0\`)
+mySprite = sprites.create(assets.image\`thunderbolt0\`, SpriteKind.Player)
+hideThunderbolt()
+animation.runImageAnimation(
+mySprite,
+assets.animation\`thunderboltAnimation0\`,
+200,
+true
+)
+canSpawnThunderbolt = 1
+game.onUpdate(function () {
+    if (mySprite.y > 60) {
+        canSpawnThunderbolt = 1
+        hideThunderbolt()
+    }
+})
+forever(function () {
+    mySprite2 = sprites.create(assets.image\`cloud0\`, SpriteKind.Enemy)
+    mySprite2.setPosition(0, 40)
+    mySprite2.vx = 100
+    pause(randint(700, 1300))
+})`,
+  "24-2-2": `sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    canSpawnThunderbolt = 1
+    hideThunderbolt()
+})
+function hideThunderbolt () {
+    mySprite.setPosition(0, -15)
+    mySprite.vy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (canSpawnThunderbolt == 1) {
+        canSpawnThunderbolt = 0
+        pause(500)
+        mySprite.setPosition(60, -15)
+        mySprite.vy = 200
+    }
+})
+let mySprite2: Sprite = null
+let canSpawnThunderbolt = 0
+let mySprite: Sprite = null
+scene.setBackgroundColor(12)
+scene.setBackgroundImage(assets.image\`myImage0\`)
+mySprite = sprites.create(assets.image\`thunderbolt0\`, SpriteKind.Player)
+hideThunderbolt()
+animation.runImageAnimation(
+mySprite,
+assets.animation\`thunderboltAnimation0\`,
+200,
+true
+)
+canSpawnThunderbolt = 1
+game.onUpdate(function () {
+    if (mySprite.y > 60) {
+        canSpawnThunderbolt = 1
+        hideThunderbolt()
+    }
+})
+forever(function () {
+    mySprite2 = sprites.create(assets.image\`cloud0\`, SpriteKind.Enemy)
+    if (randint(0, 1) == 0) {
+        mySprite2.setPosition(0, 40)
+        mySprite2.vx = 100
+    } else {
+        mySprite2.setPosition(160, 40)
+        mySprite2.vx = -100
+    }
+    pause(randint(700, 1300))
+})
+`,
+  "24-2-3": `sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    info.changeScoreBy(30)
+    sprites.destroy(otherSprite)
+    canSpawnThunderbolt = 1
+    hideThunderbolt()
+})
+function hideThunderbolt () {
+    mySprite.setPosition(0, -15)
+    mySprite.vy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (canSpawnThunderbolt == 1) {
+        canSpawnThunderbolt = 0
+        pause(500)
+        mySprite.setPosition(60, -15)
+        mySprite.vy = 200
+    }
+})
+let mySprite2: Sprite = null
+let canSpawnThunderbolt = 0
+let mySprite: Sprite = null
+info.setScore(0)
+scene.setBackgroundColor(12)
+scene.setBackgroundImage(assets.image\`myImage0\`)
+mySprite = sprites.create(assets.image\`thunderbolt0\`, SpriteKind.Player)
+hideThunderbolt()
+animation.runImageAnimation(
+mySprite,
+assets.animation\`thunderboltAnimation0\`,
+200,
+true
+)
+canSpawnThunderbolt = 1
+game.onUpdate(function () {
+    if (mySprite.y > 60) {
+        canSpawnThunderbolt = 1
+        hideThunderbolt()
+    }
+})
+forever(function () {
+    mySprite2 = sprites.create(assets.image\`cloud0\`, SpriteKind.Enemy)
+    if (randint(0, 1) == 0) {
+        mySprite2.setPosition(0, 40)
+        mySprite2.vx = randint(80, 120)
+    } else {
+        mySprite2.setPosition(160, 40)
+        mySprite2.vx = randint(-120, -80)
+    }
+    pause(randint(700, 1300))
+})
+`,
+  "24-2-4": `sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    info.changeScoreBy(30)
+    sprites.destroy(otherSprite)
+    canSpawnThunderbolt = 1
+    hideThunderbolt()
+})
+info.onCountdownEnd(function () {
+    game.gameOver(true)
+})
+function hideThunderbolt () {
+    mySprite.setPosition(0, -15)
+    mySprite.vy = 0
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (canSpawnThunderbolt == 1) {
+        canSpawnThunderbolt = 0
+        pause(500)
+        mySprite.setPosition(60, -15)
+        mySprite.vy = 200
+    }
+})
+let mySprite2: Sprite = null
+let canSpawnThunderbolt = 0
+let mySprite: Sprite = null
+info.setScore(0)
+scene.setBackgroundColor(12)
+scene.setBackgroundImage(assets.image\`myImage0\`)
+mySprite = sprites.create(assets.image\`thunderbolt0\`, SpriteKind.Player)
+animation.runImageAnimation(
+mySprite,
+assets.animation\`thunderboltAnimation0\`,
+200,
+true
+)
+canSpawnThunderbolt = 1
+hideThunderbolt()
+info.startCountdown(30)
+game.onUpdate(function () {
+    if (mySprite.y > 60) {
+        canSpawnThunderbolt = 1
+        hideThunderbolt()
+    }
+})
+forever(function () {
+    mySprite2 = sprites.create(assets.image\`cloud0\`, SpriteKind.Enemy)
+    if (randint(0, 1) == 0) {
+        mySprite2.setPosition(0, 40)
+        mySprite2.vx = randint(80, 120)
+    } else {
+        mySprite2.setPosition(160, 40)
+        mySprite2.vx = randint(-120, -80)
+    }
+    pause(randint(700, 1300))
+})
+`,
+  "24-3-1": ``,
+  "24-3-2": ``,
+  "24-3-3": ``,
+  "24-3-4": ``,
 
   "25-1-1": `let character = sprites.create(assets.image\`myImage0\`, SpriteKind.Player)
 character.setPosition(30,30)
