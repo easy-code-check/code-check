@@ -9324,8 +9324,437 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function(sprite: Sprite, 
 placeFood()`,
   "26-2-4": ``,
 
-  "27-1-1": ``, "27-1-2": ``, "27-1-3": ``, "27-1-4": ``,
-  "27-2-1": ``, "27-2-2": ``, "27-2-3": ``, "27-2-4": ``,
+  "27-1-1": ``,
+  "27-1-2": ` scene.setTileMapLevel(assets.tilemap\`レベル\`)
+ let cursor = sprites.create(assets.image\`cursor\`)
+
+ let cursorColumn = 0
+ let cursorRow = 0
+
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+
+ game.onUpdate(function () {
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+ })`, 
+  "27-1-3": `let tilemapLevel = assets.tilemap\`レベル\`
+let tilemapWidth = tilemapLevel.width
+let tilemapHeight = tilemapLevel.height
+ scene.setTileMapLevel(assets.tilemap\`レベル\`)
+
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+
+ game.onUpdate(function () {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+ })
+
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    let tileLocation = cursor.tilemapLocation()
+    let tile = tileLocation.getImage()
+
+    if (tile == assets.tile\`unopened\`)
+        tiles.setTileAt(tileLocation, assets.tile\`openedEmpty\`)
+ })`, 
+  "27-1-4": ` let tilemapLevel = assets.tilemap\`レベル\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+ scene.setTileMapLevel(assets.tilemap\`レベル\`)
+
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+
+ game.onUpdate(function () {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+ })
+
+ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    let tileLocation = cursor.tilemapLocation()
+    let tile = tileLocation.getImage()
+
+    if (tile == assets.tile\`unopened\`)
+        tiles.setTileAt(tileLocation, assets.tile\`openedEmpty\`)
+    else if (tile == assets.tile\`unopenedWithMine\`) {
+        tiles.setTileAt(tileLocation, assets.tile\`openedMine\`)
+        game.currentScene().render()
+        game.over()
+ })`,
+  "27-2-1": ` scene.setTileMapLevel(assets.tilemap\`レベル\`)
+ let tilemapLevel = assets.tilemap\`レベル\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+
+ function countNearMines(location: tiles.Location) {
+    let nearMines = 0
+
+    for (let r = -1; r < 2; ++r)
+        for (let c = -1; c < 2; ++c) {
+            let tileLocation = tiles.getTileLocation(location.column + c, location.row + r)
+            let tile = tileLocation.getImage()
+
+            if (tile == assets.tile\`unopenedWithMine\`)
+                nearMines += 1
+        }
+
+    return nearMines
+ }
+
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+
+ game.onUpdate(function () {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+
+ })
+ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+ let tileLocation = cursor.tilemapLocation()
+ let tile = tileLocation.getImage()
+ if (tile == assets.tile\`unopened\`) {
+ let nearMines = countNearMines(tileLocation)
+        let nearMinesTiles = [assets.tile\`openedEmpty\`, assets.tile\`opened1\`, 
+                                                        assets.tile\`opened2\`, 
+                                                        assets.tile\`opened3\`, 
+                                                        assets.tile\`opened4\`, 
+                                                        assets.tile\`opened5\`, 
+                                                        assets.tile\`opened6\`, 
+                                                        assets.tile\`opened7\`, 
+                                                        assets.tile\`opened8\`]
+        tiles.setTileAt(tileLocation, nearMinesTiles[nearMines])
+    } 
+    }
+ })`,
+  "27-2-2": ` scene.setTileMapLevel(assets.tilemap\`レベル\`)
+ let tilemapLevel = assets.tilemap\`レベル\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+
+ function countNearMines(location: tiles.Location) {
+    let nearMines = 0
+
+    for (let r = -1; r < 2; ++r)
+        for (let c = -1; c < 2; ++c) {
+            let tileLocation = tiles.getTileLocation(location.column + c, location.row + r)
+            let tile = tileLocation.getImage()
+
+            if (tile == assets.tile\`unopenedWithMine\`)
+                nearMines += 1
+       }
+
+    return nearMines
+ }
+
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+
+ game.onUpdate(function () {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+    
+ })
+ function openTile(tileLocation: tiles.Location) {
+ let tile = tileLocation.getImage()
+
+    
+ if (tile == assets.tile\`unopened\`) {
+        
+
+
+ let nearMines = countNearMines(tileLocation)
+        let nearMinesTiles = [assets.tile\`openedEmpty\`, assets.tile\`opened1\`, 
+                                                        assets.tile\`opened2\`, 
+                                                        assets.tile\`opened3\`, 
+                                                        assets.tile\`opened4\`, 
+                                                        assets.tile\`opened5\`, 
+                                                        assets.tile\`opened6\`, 
+                                                        assets.tile\`opened7\`, 
+                                                        assets.tile\`opened8\`]
+        tiles.setTileAt(tileLocation, nearMinesTiles[nearMines])
+
+    if (nearMines == 0) {
+    for (let r = -1; r < 2; ++r)
+    for (let c = -1; c < 2; ++c)
+                    openTile(tiles.getTileLocation(tileLocation.column + c, tileLocation.row + r))
+        }
+    } 
+    }
+ else if (tile == assets.tile\`unopenedWithMine\`) {
+        tiles.setTileAt(tileLocation, assets.tile\`openedMine\`)
+        game.currentScene().render()
+        game.over()
+  }
+ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+
+    openTile(cursor.tilemapLocation())
+ })`,
+  "27-2-3": ` scene.setTileMapLevel(assets.tilemap\`レベル\`)
+ let tilemapLevel = assets.tilemap\`レベル\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+
+ function countNearMines(location: tiles.Location) {
+    let nearMines = 0
+
+    for (let r = -1; r < 2; ++r)
+        for (let c = -1; c < 2; ++c) {
+            let tileLocation = tiles.getTileLocation(location.column + c, location.row + r)
+            let tile = tileLocation.getImage()
+
+            if (tile == assets.tile\`unopenedWithMine\`)
+                nearMines += 1
+            else if (tile == assets.tile\`unopenedFlagWithMine\`)
+                nearMines += 1
+        }
+
+    return nearMines
+ }
+
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+
+ game.onUpdate(function () {
+
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+
+     cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+     tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+ })
+ function openTile(tileLocation: tiles.Location) {
+ let tile = tileLocation.getImage()
+ if (tile == assets.tile\`unopened\`) {
+ let nearMines = countNearMines(tileLocation)
+         let nearMinesTiles = [assets.tile\`openedEmpty\`, assets.tile\`opened1\`, 
+                                                         assets.tile\`opened2\`, 
+                                                         assets.tile\`opened3\`, 
+                                                         assets.tile\`opened4\`, 
+                                                         assets.tile\`opened5\`, 
+                                                         assets.tile\`opened6\`, 
+                                                         assets.tile\`opened7\`, 
+                                                        assets.tile\`opened8\`]
+         tiles.setTileAt(tileLocation, nearMinesTiles[nearMines])
+ if (nearMines == 0) {
+ for (let r = -1; r < 2; ++r)
+ for (let c = -1; c < 2; ++c)
+                     openTile(tiles.getTileLocation(tileLocation.column + c, tileLocation.row + r))
+         }
+     } 
+     }
+ }
+ else if (tile == assets.tile\`unopenedWithMine\`) {
+         tiles.setTileAt(tileLocation, assets.tile\`openedMine\`)
+         game.currentScene().render()
+         game.over()
+ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+     openTile(cursor.tilemapLocation())
+ })
+ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+
+ let tileLocation = cursor.tilemapLocation()
+ let tile = tileLocation.getImage()
+ if (tile == assets.tile\`unopened\`)
+        tiles.setTileAt(tileLocation, assets.tile\`unopenedFlag\`)
+ else if (tile == assets.tile\`unopenedFlag\`)
+    
+
+        tiles.setTileAt(tileLocation, assets.tile\`unopened\`)
+
+ else if (tile == assets.tile\`unopenedWithMine\`)
+         tiles.setTileAt(tileLocation, assets.tile\`unopenedFlagWithMine\`)
+ else if (tile == assets.tile\`unopenedFlagWithMine\`)
+         tiles.setTileAt(tileLocation, assets.tile\`unopenedWithMine\`)
+ })`,
+  "27-2-4": ` let tilemapLevel = assets.tilemap\`レベル\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+ scene.setTileMapLevel(assets.tilemap\`レベル\`)
+
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+
+ function countNearMines(location: tiles.Location) {
+    let nearMines = 0
+
+    for (let r = -1; r < 2; ++r)
+        for (let c = -1; c < 2; ++c) {
+            let tileLocation = tiles.getTileLocation(location.column + c, location.row + r)
+            let tile = tileLocation.getImage()
+
+            if (tile == assets.tile\`unopenedWithMine\`)
+                nearMines += 1
+            else if (tile == assets.tile\`unopenedFlagWithMine\`)
+                nearMines += 1
+        }
+
+    return nearMines
+ }
+
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+
+ game.onUpdate(function () {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+
+     cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+    
+     tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+ })
+ function openTile(tileLocation: tiles.Location){
+ let tile = tileLocation.getImage()
+    
+ if (tile == assets.tile\`unopened\`) {
+        
+ let nearMines = countNearMines(tileLocation)
+         let nearMinesTiles = [assets.tile\`openedEmpty\`, assets.tile\`opened1\`, 
+                                                         assets.tile\`opened2\`, 
+                                                         assets.tile\`opened3\`, 
+                                                         assets.tile\`opened4\`, 
+                                                         assets.tile\`opened5\`, 
+                                                         assets.tile\`opened6\`, 
+                                                         assets.tile\`opened7\`, 
+                                                         assets.tile\`opened8\`]
+         tiles.setTileAt(tileLocation, nearMinesTiles[nearMines])
+ 
+ if (nearMines == 0){
+ for (let r = -1; r < 2; ++r)
+ for (let c = -1; c < 2; ++c)
+                     openTile(tiles.getTileLocation(tileLocation.column +c, tileLocation.row + r))
+         }
+     } 
+     }
+ }
+ else if (tile == assets.tile\`unopenedWithMine\`) {
+         tiles.setTileAt(tileLocation, assets.tile\`openedMine\`)
+         game.currentScene().render()
+         game.over()
+ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+     openTile(cursor.tilemapLocation())
+ })
+ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+ let tileLocation = cursor.tilemapLocation()
+ let tile = tileLocation.getImage()
+ if (tile == assets.tile\`unopened\`)
+         tiles.setTileAt(tileLocation, assets.tile\`unopenedFlag\`)
+ else if (tile == assets.tile\`unopenedFlag\`)
+    
+         tiles.setTileAt(tileLocation, assets.tile\`unopened\`)
+
+ else if (tile == assets.tile\`unopenedWithMine\`)
+         tiles.setTileAt(tileLocation, assets.tile\`unopenedFlagWithMine\`)
+ else if (tile == assets.tile\`unopenedFlagWithMine\`)
+         tiles.setTileAt(tileLocation, assets.tile\`unopenedWithMine\`)
+ })
+ game.onUpdate(function(){
+
+ if (tiles.getTilesByType(assets.tile\`unopened\`).length > 0)
+ return
+ if (tiles.getTilesByType(assets.tile\`unopenedFlag\`).length > 0)
+ return
+ if (tiles.getTilesByType(assets.tile\`unopenedWithMine\`).length > 0)
+ return
+     game.currentScene().render()
+     game.over(true)
+ })`,
 
   "28-1-1": ``,
   "28-1-2": `let turret = sprites.create(assets.image\`turret\`)
