@@ -7852,8 +7852,246 @@ game.onUpdateInterval(100, function () {
 
   // ===== ステージ20 =====
   "20-1-1": ``,
-  "20-1-2": ``,
-  "20-1-3": ``,
+  "20-1-2": `namespace SpriteKind {
+    export const EnemyProjectile = SpriteKind.create()
+}
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite)
+    hideEnemy(otherSprite)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.EnemyProjectile, function (sprite, otherSprite) {
+    damage()
+})
+controller.A.onEvent(ControllerButtonEvent.Released, function () {
+    shoot = 0
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    damage()
+})
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    shoot = 1
+})
+function hideEnemy (enemySprite: Sprite) {
+    enemySprite.x = 0
+}
+function damage () {
+    if (invincible == 0) {
+        info.changeLifeBy(-1)
+        invincible = 1
+    }
+}
+let projectile: Sprite = null
+let projectile2: Sprite = null
+let mySprite2: Sprite = null
+let invincible = 0
+let shoot = 0
+info.setLife(3)
+let mySprite = sprites.create(assets.image\`player0\`, SpriteKind.Player)
+controller.moveSprite(mySprite)
+shoot = 0
+invincible = 0
+tiles.setCurrentTilemap(tilemap\`レベル1\`)
+scene.centerCameraAt(96, 0)
+let 敵v配列: Sprite[] = []
+let 敵w配列: Sprite[] = []
+let 敵s配列: Sprite[] = []
+let 敵w移動 = 0
+let 敵s移動 = 0
+for (let 値 of tiles.getTilesByType(assets.tile\`myTile\`)) {
+    mySprite2 = sprites.create(assets.image\`myImage13\`, SpriteKind.Enemy)
+    mySprite2.setPosition(値.x, 値.y)
+    mySprite2.vx = -70
+    敵v配列.push(mySprite2)
+}
+for (let 値 of tiles.getTilesByType(assets.tile\`myTile0\`)) {
+    mySprite2 = sprites.create(assets.image\`myImage\`, SpriteKind.Enemy)
+    mySprite2.setPosition(値.x, 値.y)
+    mySprite2.vx = -40
+    敵w配列.push(mySprite2)
+}
+for (let 値 of tiles.getTilesByType(assets.tile\`myTile1\`)) {
+    mySprite2 = sprites.create(assets.image\`myImage0\`, SpriteKind.Enemy)
+    mySprite2.setPosition(値.x, 値.y)
+    mySprite2.vx = -40
+    敵s配列.push(mySprite2)
+}
+game.onUpdate(function () {
+    mySprite.setStayInScreen(true)
+})
+game.onUpdate(function () {
+    for (let 値 of 敵v配列) {
+        if (値.x < 70) {
+            値.vx = 70
+        }
+    }
+    敵s移動 += 0.1
+    for (let 値 of 敵s配列) {
+        値.vy = Math.sin(敵s移動) * 100
+    }
+})
+game.onUpdateInterval(2000, function () {
+    for (let 値 of 敵w配列) {
+        projectile2 = sprites.createProjectileFromSprite(assets.image\`enemyShoot\`, 値, -70, 0)
+        projectile2.setKind(SpriteKind.EnemyProjectile)
+    }
+})
+game.onUpdateInterval(1000, function () {
+    for (let 値 of 敵w配列) {
+        if (敵w移動 == 0) {
+            値.vy = 40
+        } else {
+            値.vy = -40
+        }
+    }
+    if (敵w移動 == 0) {
+        敵w移動 = 1
+    } else {
+        敵w移動 = 0
+    }
+})
+forever(function () {
+    if (invincible == 1) {
+        animation.runImageAnimation(
+        mySprite,
+        assets.animation\`playerInvincibleAnimation\`,
+        200,
+        true
+        )
+        pause(2000)
+        animation.stopAnimation(animation.AnimationTypes.All, mySprite)
+        mySprite.setImage(assets.image\`player0\`)
+        invincible = 0
+    }
+})
+game.onUpdateInterval(300, function () {
+    if (shoot == 1) {
+        projectile = sprites.createProjectileFromSprite(assets.image\`playerShot\`, mySprite, 100, 0)
+    }
+})`,
+  "20-1-3": `namespace SpriteKind {
+    export const EnemyProjectile = SpriteKind.create()
+}
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite)
+    hideEnemy(otherSprite)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.EnemyProjectile, function (sprite, otherSprite) {
+    damage()
+})
+controller.A.onEvent(ControllerButtonEvent.Released, function () {
+    shoot = 0
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    damage()
+})
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    shoot = 1
+})
+function hideEnemy (enemySprite: Sprite) {
+    enemySprite.x = 0
+}
+function damage () {
+    if (invincible == 0) {
+        info.changeLifeBy(-1)
+        invincible = 1
+    }
+}
+let projectile: Sprite = null
+let projectile2: Sprite = null
+let mySprite2: Sprite = null
+let invincible = 0
+let shoot = 0
+info.setLife(3)
+let mySprite = sprites.create(assets.image\`player0\`, SpriteKind.Player)
+controller.moveSprite(mySprite)
+shoot = 0
+invincible = 0
+tiles.setCurrentTilemap(tilemap\`レベル1\`)
+scene.centerCameraAt(96, 0)
+let 敵v配列: Sprite[] = []
+let 敵w配列: Sprite[] = []
+let 敵s配列: Sprite[] = []
+let 敵w移動 = 0
+let 敵s移動 = 0
+for (let 値 of tiles.getTilesByType(assets.tile\`myTile\`)) {
+    mySprite2 = sprites.create(assets.image\`myImage13\`, SpriteKind.Enemy)
+    mySprite2.setPosition(値.x, 値.y)
+    mySprite2.vx = -70
+    敵v配列.push(mySprite2)
+}
+for (let 値 of tiles.getTilesByType(assets.tile\`myTile0\`)) {
+    mySprite2 = sprites.create(assets.image\`myImage\`, SpriteKind.Enemy)
+    mySprite2.setPosition(値.x, 値.y)
+    mySprite2.vx = -40
+    敵w配列.push(mySprite2)
+}
+for (let 値 of tiles.getTilesByType(assets.tile\`myTile1\`)) {
+    mySprite2 = sprites.create(assets.image\`myImage0\`, SpriteKind.Enemy)
+    mySprite2.setPosition(値.x, 値.y)
+    mySprite2.vx = -40
+    敵s配列.push(mySprite2)
+}
+game.onUpdate(function () {
+    mySprite.setStayInScreen(true)
+})
+game.onUpdate(function () {
+    for (let 値 of 敵v配列) {
+        if (値.x < 70) {
+            値.vx = 70
+        }
+    }
+    敵s移動 += 0.1
+    for (let 値 of 敵s配列) {
+        値.vy = Math.sin(敵s移動) * 100
+    }
+})
+game.onUpdateInterval(2000, function () {
+    for (let 値 of 敵w配列) {
+        projectile2 = sprites.createProjectileFromSprite(assets.image\`enemyShoot\`, 値, -70, 0)
+        projectile2.setKind(SpriteKind.EnemyProjectile)
+    }
+})
+game.onUpdateInterval(1000, function () {
+    for (let 値 of 敵w配列) {
+        if (敵w移動 == 0) {
+            値.vy = 40
+        } else {
+            値.vy = -40
+        }
+    }
+    if (敵w移動 == 0) {
+        敵w移動 = 1
+    } else {
+        敵w移動 = 0
+    }
+})
+game.onUpdateInterval(1000, function () {
+    for (let 値 of 敵s配列) {
+        projectile2 = sprites.createProjectileFromSprite(assets.image\`enemyShoot\`, 値, -70, 0)
+        projectile2.setKind(SpriteKind.EnemyProjectile)
+    }
+})
+forever(function () {
+    if (invincible == 1) {
+        animation.runImageAnimation(
+        mySprite,
+        assets.animation\`playerInvincibleAnimation\`,
+        200,
+        true
+        )
+        pause(2000)
+        animation.stopAnimation(animation.AnimationTypes.All, mySprite)
+        mySprite.setImage(assets.image\`player0\`)
+        invincible = 0
+    }
+})
+game.onUpdateInterval(300, function () {
+    if (shoot == 1) {
+        projectile = sprites.createProjectileFromSprite(assets.image\`playerShot\`, mySprite, 100, 0)
+    }
+})`,
   "20-1-4": ``,
 
   "20-2-1": ``,
