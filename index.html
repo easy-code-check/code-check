@@ -11498,84 +11498,63 @@ placeFood()`,
  let tilemapWidth = tilemapLevel.width
  let tilemapHeight = tilemapLevel.height
  tiles.setCurrentTilemap(tilemapLevel)
-
  let snakeHead = sprites.create(assets.image\`snakeHeadLeft\`, SpriteKind.Player)
  let snakeHeadColumn = tilemapWidth / 2
  let snakeHeadRow = tilemapHeight / 2
  scene.cameraFollowSprite(snakeHead)
  let snakeHeadDirection = 0
-
  let snakeBodies: Sprite[] = []
  let snakeBodyLocation: tiles.Location[] = []
-
  game.onUpdateInterval(100, function () {
         if (snakeHeadDirection == 0) {
                 snakeHeadColumn -= 1
-                snakeHead.setImage(assets.image\`snakeHeadLeft\`)
-        
+                snakeHead.setImage(assets.image\`snakeHeadLeft\`)        
     } else if (snakeHeadDirection == 1) {
                 snakeHeadRow += 1
-                snakeHead.setImage(assets.image\`snakeHeadDown\`)
-        
+                snakeHead.setImage(assets.image\`snakeHeadDown\`)        
     } else if (snakeHeadDirection == 2) {
                 snakeHeadRow -= 1
-                snakeHead.setImage(assets.image\`snakeHeadUp\`)
-        
+                snakeHead.setImage(assets.image\`snakeHeadUp\`)        
     } else if (snakeHeadDirection == 3) {
                 snakeHeadColumn += 1
-                snakeHead.setImage(assets.image\`snakeHeadRight\`)
-        
-    }
-    
+                snakeHead.setImage(assets.image\`snakeHeadRight\`)        
+    }  
         if (snakeHeadColume < 0 || snakeHeadColumn > tilemapWidth - 1 || snakeHeadRow < 0 || snakeHeadRow > tilemapHeight - 1)
-                game.over()
-    
+                game.over()   
         for (let i = 0; i < snakeBodies.length; ++i) {
                 let ri = (snakeBodies.length - 1) - i
                 if (ri == 0)
                         snakeBodyLocation[0] = snakeHead.tilemapLocation()
                 else
-                    snakeBodyLocation[ri] = snakeBodyLocation[ri - 1]
-        
-    }
-    
+                    snakeBodyLocation[ri] = snakeBodyLocation[ri - 1]        
+    }   
         for (let i = 0; i < snakeBodyLocation.length; ++i)
-               tiles.placeOnTile(snakeBodies[i], snakeBodyLocation[i])
-    
-        tiles.placeOnTile(snakeHead, tiles.getTileLocation(snakeHeadColumn, snakeHeadRow))
-    
+               tiles.placeOnTile(snakeBodies[i], snakeBodyLocation[i])    
+        tiles.placeOnTile(snakeHead, tiles.getTileLocation(snakeHeadColumn, snakeHeadRow))    
 })
-
  controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         if (snakeHeadDirection == 3)
             return
     snakeHeadDirection = 0
-
 })
  controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         if (snakeHeadDirection == 2)
           return
-        snakeHeadDirection = 1
-    
+        snakeHeadDirection = 1    
 })
  controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         if (snakeHeadDirection == 1)
            return
-        snakeHeadDirection = 2
-    
+        snakeHeadDirection = 2    
 })
  controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
         if (snakeHeadDirection == 0)
             return
     snakeHeadDirection = 3
-
 })
-
  function placeFood() {
     tiles.setTileAt(tiles.getTileLocation(randint(1, tilemapWidth - 2), randint(1, tilemapHeight - 2)), assets.tile\`apple\`);
-
 }
-
  function extendBody() {
         let snakeBody = sprites.create(assets.image\`snakeBody\`, SpriteKind.Enemy)
         if (snakeHeadDirection == 0)
@@ -11587,9 +11566,7 @@ placeFood()`,
         else if (snakeHeadDirection == 3)
         tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColumn - 1, snakeHeadRow))
     snakeBodies.push(snakeBody)
-
 }
-
 scene.onOverlapTile(SpriteKind.Player, assets.tile\`apple\`, function (sprite: Sprite, location: tiles.Location) {
     tiles.setTileAt(location, assets.tile\`transparency16\`)
     placeFood()
