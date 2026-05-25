@@ -11494,7 +11494,111 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile\`apple \`, function(sprite: S
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function(sprite: Sprite, otherSprite: Sprite) {   
 })
 placeFood()`,
-  "26-2-4": ``,
+  "26-2-4": ` let tilemapLevel = assets.tilemap\`level0\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+ tiles.setCurrentTilemap(tilemapLevel)
+
+ let snakeHead = sprites.create(assets.image\`snakeHeadLeft\`, SpriteKind.Player)
+ let snakeHeadColume = tilemapWidth / 2
+ let snakeHeadRow = tilemapHeight / 2
+ scene.cameraFollowSprite(snakeHead)
+ let snakeHeadDirection = 0
+
+ let snakeBodies: Sprite[] = []
+ let snakeBodyLocation: tiles.Location[] = []
+
+ game.onUpdateInterval(100, function () {
+        if (snakeHeadDirection == 0) {
+                snakeHeadColume -= 1
+                snakeHead.setImage(assets.image\`snakeHeadLeft\`)
+        
+    } else if (snakeHeadDirection == 1) {
+                snakeHeadRow += 1
+                snakeHead.setImage(assets.image\`snakeHeadDown\`)
+        
+    } else if (snakeHeadDirection == 2) {
+                snakeHeadRow -= 1
+                snakeHead.setImage(assets.image\`snakeHeadUp\`)
+        
+    } else if (snakeHeadDirection == 3) {
+                snakeHeadColume += 1
+                snakeHead.setImage(assets.image\`snakeHeadRight\`)
+        
+    }
+    
+        if (snakeHeadColume < 0 || snakeHeadColume > tilemapWidth - 1 || snakeHeadRow < 0 || snakeHeadRow > tilemapHeight - 1)
+                game.over()
+    
+        for (let i = 0; i < snakeBodies.length; ++i) {
+                let ri = (snakeBodies.length - 1) - i
+                if (ri == 0)
+                        snakeBodyLocation[0] = snakeHead.tilemapLocation()
+                else
+                    snakeBodyLocation[ri] = snakeBodyLocation[ri - 1]
+        
+    }
+    
+        for (let i = 0; i < snakeBodyLocation.length; ++i)
+               tiles.placeOnTile(snakeBodies[i], snakeBodyLocation[i])
+    
+        tiles.placeOnTile(snakeHead, tiles.getTileLocation(snakeHeadColume, snakeHeadRow))
+    
+})
+
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+        if (snakeHeadDirection == 3)
+            return
+    snakeHeadDirection = 0
+
+})
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+        if (snakeHeadDirection == 2)
+          return
+        snakeHeadDirection = 1
+    
+})
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+        if (snakeHeadDirection == 1)
+           return
+        snakeHeadDirection = 2
+    
+})
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+        if (snakeHeadDirection == 0)
+            return
+    snakeHeadDirection = 3
+
+})
+
+ function placeFood() {
+    tiles.setTileAt(tiles.getTileLocation(randint(1, tilemapWidth - 2), randint(1, tilemapHeight - 2)), assets.tile\`apple\`);
+
+}
+
+ function extendBody() {
+        let snakeBody = sprites.create(assets.image\`snakeBody\`, SpriteKind.Enemy)
+        if (snakeHeadDirection == 0)
+            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColume + 1, snakeHeadRow))
+        else if (snakeHeadDirection == 1)
+            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColume, snakeHeadRow - 1))
+        else if (snakeHeadDirection == 2)
+            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColume, snakeHeadRow + 1))
+        else if (snakeHeadDirection == 3)
+        tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColume - 1, snakeHeadRow))
+    snakeBodies.push(snakeBody)
+
+}
+
+scene.onOverlapTile(SpriteKind.Player, assets.tile\`apple\`, function (sprite: Sprite, location: tiles.Location) {
+    tiles.setTileAt(location, assets.tile\`transparency16\`)
+    placeFood()
+    extendBody()
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
+    game.over()
+})
+placeFood()`,
   "27-1-1": ``,
   "27-1-2": ` scene.setTileMapLevel(assets.tilemap\`レベル\`)
  let cursor = sprites.create(assets.image\`cursor\`)
