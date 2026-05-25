@@ -11500,7 +11500,7 @@ placeFood()`,
  tiles.setCurrentTilemap(tilemapLevel)
 
  let snakeHead = sprites.create(assets.image\`snakeHeadLeft\`, SpriteKind.Player)
- let snakeHeadColume = tilemapWidth / 2
+ let snakeHeadColumn = tilemapWidth / 2
  let snakeHeadRow = tilemapHeight / 2
  scene.cameraFollowSprite(snakeHead)
  let snakeHeadDirection = 0
@@ -11510,7 +11510,7 @@ placeFood()`,
 
  game.onUpdateInterval(100, function () {
         if (snakeHeadDirection == 0) {
-                snakeHeadColume -= 1
+                snakeHeadColumn -= 1
                 snakeHead.setImage(assets.image\`snakeHeadLeft\`)
         
     } else if (snakeHeadDirection == 1) {
@@ -11522,12 +11522,12 @@ placeFood()`,
                 snakeHead.setImage(assets.image\`snakeHeadUp\`)
         
     } else if (snakeHeadDirection == 3) {
-                snakeHeadColume += 1
+                snakeHeadColumn += 1
                 snakeHead.setImage(assets.image\`snakeHeadRight\`)
         
     }
     
-        if (snakeHeadColume < 0 || snakeHeadColume > tilemapWidth - 1 || snakeHeadRow < 0 || snakeHeadRow > tilemapHeight - 1)
+        if (snakeHeadColume < 0 || snakeHeadColumn > tilemapWidth - 1 || snakeHeadRow < 0 || snakeHeadRow > tilemapHeight - 1)
                 game.over()
     
         for (let i = 0; i < snakeBodies.length; ++i) {
@@ -11542,7 +11542,7 @@ placeFood()`,
         for (let i = 0; i < snakeBodyLocation.length; ++i)
                tiles.placeOnTile(snakeBodies[i], snakeBodyLocation[i])
     
-        tiles.placeOnTile(snakeHead, tiles.getTileLocation(snakeHeadColume, snakeHeadRow))
+        tiles.placeOnTile(snakeHead, tiles.getTileLocation(snakeHeadColumn, snakeHeadRow))
     
 })
 
@@ -11579,13 +11579,13 @@ placeFood()`,
  function extendBody() {
         let snakeBody = sprites.create(assets.image\`snakeBody\`, SpriteKind.Enemy)
         if (snakeHeadDirection == 0)
-            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColume + 1, snakeHeadRow))
+            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColumn + 1, snakeHeadRow))
         else if (snakeHeadDirection == 1)
-            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColume, snakeHeadRow - 1))
+            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColumn, snakeHeadRow - 1))
         else if (snakeHeadDirection == 2)
-            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColume, snakeHeadRow + 1))
+            tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColumn, snakeHeadRow + 1))
         else if (snakeHeadDirection == 3)
-        tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColume - 1, snakeHeadRow))
+        tiles.placeOnTile(snakeBody, tiles.getTileLocation(snakeHeadColumn - 1, snakeHeadRow))
     snakeBodies.push(snakeBody)
 
 }
