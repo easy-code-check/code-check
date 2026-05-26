@@ -12595,6 +12595,7 @@ function normalizeCode(code) {
     .replace(/\r/g, "\n")
     .split("\n")
     .map(line => line.trim())
+    .filter(line => line !== "")
     .join("\n")
     .trim();
 }
