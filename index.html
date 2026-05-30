@@ -12599,7 +12599,13 @@ function normalizeCode(code) {
     .join("\n")
     .trim();
 }
-
+function normalizeCodeSorted(code) {
+  return normalizeCode(code)
+    .split("\n")
+    .sort()
+    .join("\n")
+    .trim();
+}
     function escapeHtml(text) {
       return text
         .replace(/&/g, "&amp;")
@@ -12773,6 +12779,8 @@ function getHint(correct, student) {
 
       const correctLines = normalizeCode(correctCode).split("\n");
       const studentLines = normalizeCode(studentCode).split("\n");
+	　const correctSorted = normalizeCodeSorted(correctCode);
+	　const studentSorted = normalizeCodeSorted(studentCode);
 
       const mistakes = [];
       const maxLines = Math.max(correctLines.length, studentLines.length);
@@ -12794,7 +12802,12 @@ for (let i = 0; i < maxLines; i++) {
     message: "正解です！よくできました👍"
   };
 }
-
+if (correctSorted === studentSorted) {
+  return {
+    ok: true,
+    message: "内容は正しいです！ただし、コードやブロックの順番が違います。順番を見直してみましょう。"
+  };
+}
 if (
   mistakes.length >= Math.ceil(correctLines.length * 0.6) ||
   mistakes.length >= 3) {
