@@ -12777,35 +12777,22 @@ function getHint(correct, student) {
         };
       }
 
-      const correctLines = normalizeCode(correctCode).split("\n");
-      const studentLines = normalizeCode(studentCode).split("\n");
-	  const correctSorted = normalizeCodeSorted(correctCode);
-	  const studentSorted = normalizeCodeSorted(studentCode);
+const correctLines = normalizeCode(correctCode).split("\n");
+const studentLines = normalizeCode(studentCode).split("\n");
+const correctSorted = normalizeCodeSorted(correctCode);
+const studentSorted = normalizeCodeSorted(studentCode);
 
-      const mistakes = [];
-      const maxLines = Math.max(correctLines.length, studentLines.length);
-
-for (let i = 0; i < maxLines; i++) {
-  const correctLine = (correctLines[i] ?? "").trim();
-  const studentLine = (studentLines[i] ?? "").trim();
-
-  if (correctLine !== studentLine) {
-    mistakes.push({
-      correct: correctLine,
-      student: studentLine
-    });
-  }
-}
-      if (mistakes.length === 0) {
+if (normalizeCode(correctCode) === normalizeCode(studentCode)) {
   return {
     ok: true,
-    message: "正解です！よくできました👍"
+    message: "◎ 正解です！よくできました👍"
   };
 }
+
 if (correctSorted === studentSorted) {
   return {
     ok: true,
-    message: "内容は正しいです！ただし、コードやブロックの順番が違います。順番を見直してみましょう。"
+    message: "△ 内容は正しいです！ただし、コードやブロックの順番が違います。順番を見直してみましょう。"
   };
 }
 if (
