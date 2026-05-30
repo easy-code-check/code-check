@@ -12767,50 +12767,71 @@ function getHint(correct, student) {
   return "惜しい！違う部分を見比べて直してみよう。";
 }
 
-    function checkAnswer(problemId, studentCode) {
-      const correctCode = answers[problemId];
+function checkAnswer(problemId, studentCode) {
+  const correctCode = answers[problemId];
 
-      if (!(problemId in answers)) {
-        return {
-          ok: false,
-          message: "問題ID「" + problemId + "」の正解が見つかりません。"
-        };
-      }
+  if (!(problemId in answers)) {
+    return {
+      ok: false,
+      message: "問題ID「" + problemId + "」の正解が見つかりません。"
+    };
+  }
 
-const correctLines = normalizeCode(correctCode).split("\n");
-const studentLines = normalizeCode(studentCode).split("\n");
-const correctSorted = normalizeCodeSorted(correctCode);
-const studentSorted = normalizeCodeSorted(studentCode);
+  const correctNormalized = normalizeCode(correctCode);
+  const studentNormalized = normalizeCode(studentCode);
 
-if (normalizeCode(correctCode) === normalizeCode(studentCode)) {
-  return {
-    ok: true,
-    message: "◎ 正解です！よくできました👍"
-  };
-}
+  const correctSorted = normalizeCodeSorted(correctCode);
+  const studentSorted = normalizeCodeSorted(studentCode);
 
-if (correctSorted === studentSorted) {
-  return {
-    ok: true,
-    message: "△ 内容は正しいです！ただし、コードやブロックの順番が違います。順番を見直してみましょう。"
-  };
-}
-if (
-  mistakes.length >= Math.ceil(correctLines.length * 0.6) ||
-  mistakes.length >= 3) {
+  if (correctNormalized === studentNormalized) {
+    return {
+      ok: true,
+      message: "◎ 正解です！よくできました👍"
+    };
+  }
+
+  if (correctSorted === studentSorted) {
+    return {
+      ok: true,
+      message: "△ 内容は正しいです！ただし、コードやブロックの順番が違います。順番を見直してみましょう。"
+    };
+  }
+
+  const correctLines = correctNormalized.split("\n");
+  const studentLines = studentNormalized.split("\n");
+  const maxLines = Math.max(correctLines.length, studentLines.length);
+  const mistakes = [];
+
+  for (let i = 0; i < maxLines; i++) {
+    const correctLine = correctLines[i] || "";
+    const studentLine = studentLines[i] || "";
+
+    if (correctLine !== studentLine) {
+      mistakes.push({
+        line: i + 1,
+        correct: correctLine,
+        student: studentLine
+      });
+    }
+  }
+
+  if (
+    mistakes.length >= Math.ceil(correctLines.length * 0.6) ||
+    mistakes.length >= 3
+  ) {
+    return {
+      ok: false,
+      message: "間違いが多いみたいです。ステージの選択が合っているか確認してみよう👍",
+      mistakes: mistakes
+    };
+  }
+
   return {
     ok: false,
-    message: "間違いが多いみたいです。ステージの選択が合っているか確認してみよう👍",
+    message: "ここを直せばOKです👇",
     mistakes: mistakes
   };
 }
-
-return {
-  ok: false,
-  message: "ここを直せばOKです👇",
-  mistakes: mistakes
-};
-    }
 const problemGroups = {
   "16-1": ["16-1-2", "16-1-3", "16-1-4"],
   "16-2": ["16-2-1", "16-2-2", "16-2-3"],
