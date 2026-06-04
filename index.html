@@ -8092,18 +8092,13 @@ game.onUpdateInterval(300, function () {
         projectile = sprites.createProjectileFromSprite(assets.image\`playerShot\`, mySprite, 100, 0)
     }
 })`,
-  "20-1-4": ``,
-
   "20-2-1": ``,
   "20-2-2": ``,
   "20-2-3": ``,
   "20-2-4": ``,
-
   "20-3-1": ``,
   "20-3-2": ``,
   "20-3-3": ``,
-  "20-3-4": ``,
-
   "20-4-1": ``,
   "20-4-2": ``,
   "20-4-3": ``,
@@ -10087,8 +10082,16 @@ game.onUpdateInterval(200, function () {
         projectile2.setKind(SpriteKind.EnemyProjectile)
     }
 })`,
-  "21-3-1": ``, "21-3-2": ``, "21-3-3": ``, "21-3-4": ``,
-  "22-1-1": ``,
+  "22-1-1": `let mySprite = sprites.create(assets.image\`当たり判定の箱\`, SpriteKind.Player)
+mySprite.scale = 1.5
+let mySprite2 = sprites.create(assets.image\`ノーツ\`, SpriteKind.Player)
+mySprite2.scale = 12
+game.onUpdate(function () {
+    mySprite2.scale += -0.5
+    if (mySprite2.scale < mySprite.scale) {
+        sprites.destroy(mySprite2)
+    }
+})`,
   "22-1-2": `let mySprite2: Sprite = null
 let mySprite = sprites.create(assets.image\`当たり判定の箱0\`, SpriteKind.Player)
 mySprite.scale = 1.5
@@ -10524,7 +10527,6 @@ game.onUpdateInterval(500, function () {
     }
 })
 `,
-  "22-3-1": ``, "22-3-2": ``, "22-3-3": ``, "22-3-4": ``,
   "23-1-1": `let mySprite = sprites.create(assets.image\`myImage0\`, SpriteKind.Player)
 tiles.setCurrentTilemap(tilemap\`レベル1\`)
 let playerColumn = 8
@@ -11173,10 +11175,6 @@ forever(function () {
     pause(randint(700, 1300))
 })
 `,
-  "24-3-1": ``,
-  "24-3-2": ``,
-  "24-3-3": ``,
-  "24-3-4": ``,
   "25-1-1": `let character = sprites.create(assets.image\`myImage0\`, SpriteKind.Player)
 character.setPosition(30,30)
 character.ay = 500`,
@@ -12214,10 +12212,528 @@ function initializeUpgradeItems(){
     }
 }
 initializeUpgradeItems()`,
-  "28-3-3": ``, 
+  "28-3-3": ` let turret = sprites.create(assets.image\`turret\`)
+ let shotSight = sprites.create(assets.image\`shotSight\`)
+ turret.setPosition(80, 112)
+ shotSight.setPosition(80, 112)
+ let turretDegrees = 90
+let upgradeItemIndex = 0
+
+ let upgradeItems: Sprite[] = []
+ let upgradeItemIcons = [
+    assets.image\`fireRateUpgrade\`,
+    assets.image\`enemySpawnRateUpgrade\`,
+    assets.image\`wobbleUpgrade\`,
+    assets.image\`controlUpgrade\`,
+ ]
+ info.setScore(0)
+ function computeVector(degrees: number) {
+    let radians = (degrees / 180) * Math.PI
+    let vx = Math.cos(radians)
+    let vy = -Math.sin(radians)
+    return { x: vx, y: vy }
+ }
+
+ loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+
+    loops.pause(60)
+ })
+ loops.forever(function () {
+    if (!controller.A.isPressed())
+        return
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 60.0
+    let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx, vy)
+
+    loops.pause(1500)
+ })
+ loops.forever(function () {
+    let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    enemy.setFlag(SpriteFlag.AutoDestroy, true)
+    loops.pause(2000)
+ })
+ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
+    otherSprite.destroy()
+    info.changeScoreBy(15)
+ })
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex += 1
+ })
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex -= 1
+ })
+ sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
+    if (sprite.y > 120)
+        info.changeScoreBy(-10)
+ })
+ game.onUpdate(function () {
+    if (info.score() <= -50)
+        game.over()
+ })
+ game.onUpdate(function () {
+    upgradeItemIndex = Math.clamp(0, upgradeItems.length - 1, upgradeItemIndex)
+    for (let i = 0; i < upgradeItems.length; ++i) {
+        let upgradeItemIcon = upgradeItemIcons[i].clone()
+        if (i == upgradeItemIndex)
+            upgradeItemIcon.drawRect(0, 0, 12, 12, 7)
+        upgradeItems[i].setImage(upgradeItemIcon)    }
+ })
+ function initializeUpgradeItems() {
+    for (let i = 0; i < upgradeItemIcons.length; ++i) {
+        let upgradeItem = sprites.create(upgradeItemIcons[i])
+        upgradeItem.setPosition(10, 10 + i * 16)
+        upgradeItems.push(upgradeItem)
+    }
+ }
+ initializeUpgradeItems()`, 
   "28-3-4": ``,
-  "28-4-1": ``, "28-4-2": ``, "28-4-3": ``, "28-4-4": ``,
-  "28-5-1": ``, "28-5-2": ``, "28-5-3": ``, "28-5-4": ``,
+  "28-4-1": ` let turret = sprites.create(assets.image\`turret\`)
+ let shotSight = sprites.create(assets.image\`shotSight\`)
+ turret.setPosition(80, 112)
+ shotSight.setPosition(80, 112)
+ let turretDegrees = 90
+ let upgradeItemIndex = 0
+
+ let upgradeItems: Sprite[] = []
+ let upgradeItemIcons = [
+    assets.image\`fireRateUpgrade\`,
+    assets.image\`enemySpawnRateUpgrade\`,
+    assets.image\`wobbleUpgrade\`,
+    assets.image\`controlUpgrade\`,
+ ]
+let upgradeItemPrices = [
+    5,
+    10,
+    15,
+    30,
+ ]
+ info.setScore(0)
+ function computeVector(degrees: number) {
+    let radians = (degrees / 180) * Math.PI
+    let vx = Math.cos(radians)
+    let vy = -Math.sin(radians)
+    return { x: vx, y: vy }
+ }
+ loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+    loops.pause(60)
+ })
+ loops.forever(function () {
+    if (!controller.A.isPressed())
+        return
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 60.0
+    let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx, vy)
+    loops.pause(1500)
+ })
+ loops.forever(function () {
+    let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    enemy.setFlag(SpriteFlag.AutoDestroy, true)
+    loops.pause(2000)
+ })
+ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
+    otherSprite.destroy()
+    info.changeScoreBy(15)
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex -= 1
+ })
+ sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
+    if (sprite.y > 120)
+        info.changeScoreBy(-10)
+ })
+ game.onUpdate(function () {
+    if (info.score() <= -50)
+        game.over()
+ })
+function drawUpgradeItemPrice(icon: Image, price: number) {
+    for (let y = 0; y < icon.height; ++y)
+        for (let x = 0; x < icon.width; ++x) {
+            if (icon.getPixel(x, y) != 12)
+                continue
+            icon.setPixel(x, y, 3)
+        }
+}
+game.onUpdate(function () {
+    upgradeItemIndex = Math.clamp(0, upgradeItems.length - 1, upgradeItemIndex)
+for (let i = 0; i < upgradeItems.length; ++i) {
+let upgradeItemIcon = upgradeItemIcons[i].clone()
+if (i == upgradeItemIndex)
+            upgradeItemIcon.drawRect(0, 0, 12, 12, 7)
+let upgradeItemPrice = upgradeItemPrices[i]
+if (info.score() >= upgradeItemPrice)
+            drawUpgradeItemPrice(upgradeItemIcon, upgradeItemPrice)
+        upgradeItems[i].setImage(upgradeItemIcon)
+    }
+})
+function initializeUpgradeItems() {
+for (let i = 0; i < upgradeItemIcons.length; ++i) {
+let upgradeItem = sprites.create(upgradeItemIcons[i])
+        upgradeItem.setPosition(10, 10 + i * 16)
+        upgradeItems.push(upgradeItem)
+    }
+}
+initializeUpgradeItems()`, 
+"28-4-2": ` let turret = sprites.create(assets.image\`turret\`)
+ let shotSight = sprites.create(assets.image\`shotSight\`)
+ turret.setPosition(80, 112)
+ shotSight.setPosition(80, 112)
+ let turretDegrees = 90
+ let upgradeItemIndex = 0
+ let upgradeItems: Sprite[] = []
+ let upgradeItemIcons = [
+    assets.image\`fireRateUpgrade\`,
+    assets.image\`enemySpawnRateUpgrade\`,
+    assets.image\`wobbleUpgrade\`,
+    assets.image\`controlUpgrade\`,
+ ]
+ let upgradeItemPrices = [
+    5,
+    10,
+    15,
+    30,
+ ]
+ info.setScore(0)
+ function computeVector(degrees: number) {
+    let radians = (degrees / 180) * Math.PI
+    let vx = Math.cos(radians)
+    let vy = -Math.sin(radians)
+    return { x: vx, y: vy }
+ }
+ loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+    loops.pause(60)
+ })
+ loops.forever(function () {
+    if (!controller.A.isPressed())
+        return
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 60.0
+    let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx, vy)
+    loops.pause(1500)
+ })
+ loops.forever(function () {
+    let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    enemy.setFlag(SpriteFlag.AutoDestroy, true)
+    loops.pause(2000)
+ })
+ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
+    otherSprite.destroy()
+    info.changeScoreBy(15)
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex -= 1
+ })
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    let upgradeItemPrice = upgradeItemPrices[upgradeItemIndex]
+    if (info.score() < upgradeItemPrice)
+        return
+    info.changeScoreBy(-upgradeItemPrice)
+    upgradeItemPrices[upgradeItemIndex] *= 1.2
+ })
+ sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
+    if (sprite.y > 120)
+        info.changeScoreBy(-10)
+ })
+ game.onUpdate(function () {
+    if (info.score() <= -50)
+        game.over()
+ })
+ function drawUpgradeItemPrice(icon: Image, price: number) {
+    for (let y = 0; y < icon.height; ++y)
+        for (let x = 0; x < icon.width; ++x) {
+            if (icon.getPixel(x, y) != 12)
+                continue
+            icon.setPixel(x, y, 3)
+        }
+ }
+ game.onUpdate(function () {
+    upgradeItemIndex = Math.clamp(0, upgradeItems.length - 1, upgradeItemIndex)
+    for (let i = 0; i < upgradeItems.length; ++i) {
+        let upgradeItemIcon = upgradeItemIcons[i].clone()
+        if (i == upgradeItemIndex)
+            upgradeItemIcon.drawRect(0, 0, 12, 12, 7)
+        let upgradeItemPrice = upgradeItemPrices[i]
+        if (info.score() >= upgradeItemPrice)
+            drawUpgradeItemPrice(upgradeItemIcon, upgradeItemPrice)
+        upgradeItems[i].setImage(upgradeItemIcon)
+    }
+ })
+ function initializeUpgradeItems() {
+    for (let i = 0; i < upgradeItemIcons.length; ++i) {
+        let upgradeItem = sprites.create(upgradeItemIcons[i])
+        upgradeItem.setPosition(10, 10 + i * 16)
+        upgradeItems.push(upgradeItem)
+    }
+ }
+ initializeUpgradeItems()`,
+"28-5-1": ` let turret = sprites.create(assets.image\`turret\`)
+ let shotSight = sprites.create(assets.image\`shotSight\`)
+ turret.setPosition(80, 112)
+ shotSight.setPosition(80, 112)
+ let turretDegrees = 90
+ let upgradeItemIndex = 0
+let fireInterval = 1500
+ let upgradeItems: Sprite[] = []
+ let upgradeItemIcons = [
+    assets.image\`fireRateUpgrade\`,
+    assets.image\`enemySpawnRateUpgrade\`,
+    assets.image\`wobbleUpgrade\`,
+    assets.image\`controlUpgrade\`,
+ ]
+ let upgradeItemPrices = [
+    5,
+    10,
+    15,
+    30,
+ ]
+ info.setScore(0)
+ function computeVector(degrees: number) {
+    let radians = (degrees / 180) * Math.PI
+    let vx = Math.cos(radians)
+    let vy = -Math.sin(radians)
+    return { x: vx, y: vy }
+ }
+ loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+    loops.pause(60)    
+})
+loops.forever(function () {
+if (!controller.A.isPressed())
+return
+let v = computeVector(turretDegrees)
+let vx = v.x * 60.0
+let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx, vy)
+    loops.pause(fireInterval)
+})
+loops.forever(function () {
+let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    enemy.setFlag(SpriteFlag.AutoDestroy, true)
+    loops.pause(2000)
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
+    otherSprite.destroy()
+    info.changeScoreBy(15)
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex += 1
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex -= 1
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+let upgradeItemPrice = upgradeItemPrices[upgradeItemIndex]
+if (info.score() < upgradeItemPrice)
+return
+if (upgradeItemIndex == 0)
+        fireInterval -= 50
+    info.changeScoreBy(-upgradeItemPrice)
+    upgradeItemPrices[upgradeItemIndex] *= 1.2
+})
+sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
+if (sprite.y > 120)
+        info.changeScoreBy(-10)
+ })
+ game.onUpdate(function () {
+    if (info.score() <= -50)
+        game.over()
+ })
+ function drawUpgradeItemPrice(icon: Image, price: number) {
+    for (let y = 0; y < icon.height; ++y)
+        for (let x = 0; x < icon.width; ++x) {
+            if (icon.getPixel(x, y) != 12)
+                continue
+            icon.setPixel(x, y, 3)
+        }
+ }
+ game.onUpdate(function () {
+    upgradeItemIndex = Math.clamp(0, upgradeItems.length - 1, upgradeItemIndex)
+    for (let i = 0; i < upgradeItems.length; ++i) {
+        let upgradeItemIcon = upgradeItemIcons[i].clone()
+        if (i == upgradeItemIndex)
+            upgradeItemIcon.drawRect(0, 0, 12, 12, 7)
+        let upgradeItemPrice = upgradeItemPrices[i]
+        if (info.score() >= upgradeItemPrice)
+            drawUpgradeItemPrice(upgradeItemIcon, upgradeItemPrice)
+        upgradeItems[i].setImage(upgradeItemIcon)
+    }
+ })
+ function initializeUpgradeItems() {
+    for (let i = 0; i < upgradeItemIcons.length; ++i) {
+        let upgradeItem = sprites.create(upgradeItemIcons[i])
+        upgradeItem.setPosition(10, 10 + i * 16)
+        upgradeItems.push(upgradeItem)
+    }
+ }
+ initializeUpgradeItems()`,
+"28-5-2":  let turret = sprites.create(assets.image\`turret\`)
+ let shotSight = sprites.create(assets.image\`shotSight\`)
+ turret.setPosition(80, 112)
+ shotSight.setPosition(80, 112)
+ let turretDegrees = 90
+ let upgradeItemIndex = 0
+ let enemySpawnInterval = 2000
+ let fireInterval = 1500
+ let upgradeItems: Sprite[] = []
+ let upgradeItemIcons = [
+    assets.image\`fireRateUpgrade\`,
+    assets.image\`enemySpawnRateUpgrade\`,
+    assets.image\`wobbleUpgrade\`,
+    assets.image\`controlUpgrade\`,
+ ]
+ let upgradeItemPrices = [
+    5,
+    10,
+    15,
+    30,
+ ]
+ info.setScore(0)
+ function computeVector(degrees: number) {
+    let radians = (degrees / 180) * Math.PI
+    let vx = Math.cos(radians)
+    let vy = -Math.sin(radians)
+    return { x: vx, y: vy }
+ }
+ loops.forever(function () {
+    if (controller.left.isPressed())
+        turretDegrees += 20
+    if (controller.right.isPressed())
+        turretDegrees -= 20
+    turretDegrees = Math.clamp(0, 180, turretDegrees)
+    let v = computeVector(turretDegrees)
+    let vx = v.x * 10.0
+    let vy = v.y * 10.0
+    shotSight.setPosition(turret.x + vx, turret.y + vy)
+    loops.pause(60)
+})
+loops.forever(function () {
+if (!controller.A.isPressed())
+return
+let v = computeVector(turretDegrees)
+let vx = v.x * 60.0
+let vy = v.y * 60.0
+    sprites.createProjectileFromSprite(assets.image\`projectile\`, turret, vx, vy)
+    loops.pause(fireInterval)
+})
+loops.forever(function () {
+let enemy = sprites.create(assets.image\`enemy\`, SpriteKind.Enemy)
+    enemy.setPosition(randint(20, 140), 0)
+    enemy.vy = 20
+    enemy.setFlag(SpriteFlag.AutoDestroy, true)
+    loops.pause(enemySpawnInterval)
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
+    otherSprite.destroy()
+    info.changeScoreBy(15)
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex += 1
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    upgradeItemIndex -= 1
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+let upgradeItemPrice = upgradeItemPrices[upgradeItemIndex]
+if (info.score() < upgradeItemPrice)
+return
+if (upgradeItemIndex == 0)
+        fireInterval -= 50
+else if (upgradeItemIndex == 1)
+        enemySpawnInterval -= 100
+    info.changeScoreBy(-upgradeItemPrice)
+    upgradeItemPrices[upgradeItemIndex] *= 1.2
+})
+ sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
+    if (sprite.y > 120)
+        info.changeScoreBy(-10)
+ })
+ game.onUpdate(function () {
+    if (info.score() <= -50)
+        game.over()
+ })
+ function drawUpgradeItemPrice(icon: Image, price: number) {
+    for (let y = 0; y < icon.height; ++y)
+        for (let x = 0; x < icon.width; ++x) {
+            if (icon.getPixel(x, y) != 12)
+                continue
+            icon.setPixel(x, y, 3)
+        }
+ }
+ game.onUpdate(function () {
+    upgradeItemIndex = Math.clamp(0, upgradeItems.length - 1, upgradeItemIndex)
+    for (let i = 0; i < upgradeItems.length; ++i) {
+        let upgradeItemIcon = upgradeItemIcons[i].clone()
+        if (i == upgradeItemIndex)
+            upgradeItemIcon.drawRect(0, 0, 12, 12, 7)
+        let upgradeItemPrice = upgradeItemPrices[i]
+        if (info.score() >= upgradeItemPrice)
+            drawUpgradeItemPrice(upgradeItemIcon, upgradeItemPrice)
+        upgradeItems[i].setImage(upgradeItemIcon)
+    }
+ })
+ function initializeUpgradeItems() {
+    for (let i = 0; i < upgradeItemIcons.length; ++i) {
+        let upgradeItem = sprites.create(upgradeItemIcons[i])
+        upgradeItem.setPosition(10, 10 + i * 16)
+        upgradeItems.push(upgradeItem)
+    }
+ }
+ initializeUpgradeItems()``,
+"28-5-3": ``,
+"28-5-4": ``,
   "29-1-1": ``,
   "29-1-2": `scene.setTileMapLevel(assets.tilemap\`ステージa\`)
 let cursor = sprites.create(assets.image\`cursor\`)
@@ -12583,7 +13099,6 @@ initializeStage(level)`,
   "29-5-1": ``, 
   "29-5-2": ``, 
   "29-5-3": ``, 
-  "29-5-4": ``,
 
 };
 
