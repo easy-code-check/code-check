@@ -14179,9 +14179,504 @@ function performLogicGate(location: tiles.Location) {
     tiles.setTileAt(cursor.tilemapLocation(), tileKind.lightOn)
  })
  initializeStage(level)`, 
-  "29-4-4": ``,
-  "29-5-1": ``, 
-  "29-5-2": ``, 
+  "29-4-4": ` let tilemapLevel = assets.tilemap\`ステージa\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+ let level = 0
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+ enum Direction {
+    Left,
+    Down,
+    Up,
+    Right,
+ }
+ function getLocationInDirection(location: tiles.Location, direction: Direction) {
+    if (direction == Direction.Left)
+        return tiles.getTileLocation(location.column - 1, location.row)
+    if (direction == Direction.Down)
+        return tiles.getTileLocation(location.column, location.row + 1)
+    if (direction == Direction.Up)
+        return tiles.getTileLocation(location.column, location.row - 1)
+    if (direction == Direction.Right)
+        return tiles.getTileLocation(location.column + 1, location.row)
+    return null
+ }
+ function getNeighboringLocations(location: tiles.Location) {
+    let neighboringLocations = []
+    neighboringLocations.push(getLocationInDirection(location, Direction.Left))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Down))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Up))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Right))
+    return neighboringLocations
+ }
+ function processNeighbors(location: tiles.Location, callback: (location: tiles.Location) => void) {
+ }
+ for (const neighboringLocation of getNeighboringLocations(location))
+         callback(neighboringLocation)
+ }
+ let tileKind = {
+     wireOff: assets.tile\`wireOff\`,
+     wireOn: assets.tile\`wireOn\`,
+     lightOff: assets.tile\`lightOff\`,
+     lightOn: assets.tile\`lightOn\`,
+     switchOff: assets.tile\`switchOff\`,
+     switchOn: assets.tile\`switchOn\`,
+     logicNotGate: assets.tile\`logicNotGate\`,
+ }
+ function initializeStage(level: number) {
+    let levels = [assets.tilemap\`ステージa\`,
+                  assets.tilemap\`ステージb\`,
+                  assets.tilemap\`ステージc\`,
+                  assets.tilemap\`ステージd\`,
+                  assets.tilemap\`ステージe\`,
+                  assets.tilemap\`ステージf\`]
+ if (level >= levels.length)
+         game.over(true)
+ let tilemapLevel = levels[level]
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+     scene.setTileMapLevel(tilemapLevel)
+ for (let r = 0; r < tilemapHeight - 1; ++r)
+ for (let c = 0; c < tilemapWidth - 1; ++c)
+            performLogicGate(tiles.getTileLocation(c, r))
+ game.onUpdate(function () {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+ })
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ function turnWireOn(location: tiles.Location) {
+    if (location.getImage() != tileKind.wireOff)
+        return
+    tiles.setTileAt(location, tileKind.wireOn)
+    processNeighbors(location, turnOn)
+    processNeighbors(location, performLogicGate)
+ }
+ function turnWireOff(location: tiles.Location) {
+    if (location.getImage() != tileKind.wireOn)
+        return
+    tiles.setTileAt(location, tileKind.wireOff)
+    processNeighbors(location, turnOff)
+    processNeighbors(location, performLogicGate)
+ }
+ function turnlightOn(location: tiles.Location) {
+    if (location.getImage() != tileKind.lightOff)
+        return
+    tiles.setTileAt(location, tileKind.lightOn)
+ }
+ function turnlightOff(location: tiles.Location) {
+    if (location.getImage() != tileKind.lightOn)
+        return
+    tiles.setTileAt(location, tileKind.lightOff)
+ }
+ function turnOn(location: tiles.Location) {
+    turnWireOn(location)
+    turnlightOn(location)
+ }
+ function turnOff(location: tiles.Location) {
+    turnWireOff(location)
+    turnlightOff(location)
+ }
+ function isOnAt(location: tiles.Location) {
+    let tile = location.getImage()
+    if (tile == tileKind.switchOn)
+        return true
+    if (tile == tileKind.wireOn)
+        return true
+    return false
+ }
+ function performLogicNotGate(location: tiles.Location) {
+    if (location.getImage() != tileKind.logicNotGate)
+        return
+    let outputLocation = getLocationInDirection(location, Direction.Right)
+    if (isOnAt(getLocationInDirection(location, Direction.Left)))
+        turnOff(outputLocation)
+    else
+        turnOn(outputLocation)
+ }
+ function performLogicGate(location: tiles.Location) {
+    performLogicNotGate(location)
+ }
+ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    let tileLocation = cursor.tilemapLocation()
+    let tile = tileLocation.getImage()
+    if (tile == tileKind.switchOff) {
+        tiles.setTileAt(tileLocation, tileKind.switchOn)
+        processNeighbors(tileLocation, turnWireOn)
+    } else if (tile == tileKind.switchOn) {
+        tiles.setTileAt(tileLocation, tileKind.switchOff)
+        processNeighbors(tileLocation, turnWireOff)
+    }
+ })
+ game.onUpdateInterval(1000, function () {
+    if (tiles.getTilesByType(tileKind.lightOff).length > 0)
+        return
+    level += 1
+    initializeStage(level)
+ })
+ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    tiles.setTileAt(cursor.tilemapLocation(), tileKind.lightOn)
+ })
+ initializeStage(level)`,
+  "29-5-1": ` let tilemapLevel = assets.tilemap\`ステージa\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+ let level = 0
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+ enum Direction {
+    Left,
+    Down,
+    Up,
+    Right,
+ }
+ function getLocationInDirection(location: tiles.Location, direction: Direction) {
+    if (direction == Direction.Left)
+        return tiles.getTileLocation(location.column - 1, location.row)
+    if (direction == Direction.Down)
+        return tiles.getTileLocation(location.column, location.row + 1)
+    if (direction == Direction.Up)
+        return tiles.getTileLocation(location.column, location.row - 1)
+    if (direction == Direction.Right)
+        return tiles.getTileLocation(location.column + 1, location.row)
+    return null
+ }
+ function getNeighboringLocations(location: tiles.Location) {
+    let neighboringLocations = []
+    neighboringLocations.push(getLocationInDirection(location, Direction.Left))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Down))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Up))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Right))
+    return neighboringLocations
+ }
+
+ function processNeighbors(location: tiles.Location, callback: (location: tiles.Location) => void) {
+ for (const neighboringLocation of getNeighboringLocations(location))
+         callback(neighboringLocation)
+ }
+ let tileKind = {
+     wireOff: assets.tile\`wireOff\`,
+     wireOn: assets.tile\`wireOn\`,
+     lightOff: assets.tile\`lightOff\`,
+     lightOn: assets.tile\`lightOn\`,
+     switchOff: assets.tile\`switchOff\`,
+     switchOn: assets.tile\`switchOn\`,
+     logicNotGate: assets.tile\`logicNotGate\`,
+     logicAndGate: assets.tile\`logicAndGate\`,
+ }
+ function initializeStage(level: number) {
+     let levels = [assets.tilemap\`ステージa\`,
+                   assets.tilemap\`ステージb\`,
+                   assets.tilemap\`ステージc\`,
+                   assets.tilemap\`ステージd\`,
+                   assets.tilemap\`ステージe\`,
+                   assets.tilemap\`ステージf\`]
+ if (level >= levels.length)
+         game.over(true)
+ let tilemapLevel = levels[level]
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+     scene.setTileMapLevel(tilemapLevel)
+ for (let r = 0; r < tilemapHeight - 1; ++r)
+ for (let c = 0; c < tilemapWidth - 1; ++c)
+             performLogicGate(tiles.getTileLocation(c, r))
+ }
+ game.onUpdate(function () {
+     cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+     cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+ })
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ function turnWireOn(location: tiles.Location) {
+    if (location.getImage() != tileKind.wireOff)
+        return
+    tiles.setTileAt(location, tileKind.wireOn)
+    processNeighbors(location, turnOn)
+    processNeighbors(location, performLogicGate)
+ }
+ function turnWireOff(location: tiles.Location) {
+    if (location.getImage() != tileKind.wireOn)
+        return
+    tiles.setTileAt(location, tileKind.wireOff)
+    processNeighbors(location, turnOff)
+    processNeighbors(location, performLogicGate)
+ }
+ function turnlightOn(location: tiles.Location) {
+    if (location.getImage() != tileKind.lightOff)
+        return
+    tiles.setTileAt(location, tileKind.lightOn)
+ }
+ function turnlightOff(location: tiles.Location) {
+    if (location.getImage() != tileKind.lightOn)
+        return
+    tiles.setTileAt(location, tileKind.lightOff)
+ }
+ function turnOn(location: tiles.Location) {
+    turnWireOn(location)
+    turnlightOn(location)
+ }
+ function turnOff(location: tiles.Location) {
+     turnWireOff(location)
+     turnlightOff(location)
+ }
+ function isOnAt(location: tiles.Location) {
+ let tile = location.getImage()
+ if (tile == tileKind.switchOn)
+ return true
+ if (tile == tileKind.wireOn)
+ return true
+ return false
+ }
+ function performLogicNotGate(location: tiles.Location) {
+ if (location.getImage() != tileKind.logicNotGate)
+ return
+ let outputLocation = getLocationInDirection(location, Direction.Right)
+ if (isOnAt(getLocationInDirection(location, Direction.Left)))
+         turnOff(outputLocation)
+ else
+         turnOn(outputLocation)
+ }
+ function performLogicAndGate(location: tiles.Location) {
+ if (location.getImage() != tileKind.logicAndGate)
+ return
+ let input1 = isOnAt(getLocationInDirection(location, Direction.Up))
+ let input2 = isOnAt(getLocationInDirection(location, Direction.Down))
+ let outputLocation = getLocationInDirection(location, Direction.Right)
+ if (input1 && input2)
+        turnOn(outputLocation)
+ else
+        turnOff(outputLocation)
+ }
+ function performLogicGate(location: tiles.Location) {
+     performLogicNotGate(location)
+     performLogicAndGate(location)
+ }
+
+ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    let tileLocation = cursor.tilemapLocation()
+    let tile = tileLocation.getImage()
+    if (tile == tileKind.switchOff) {
+        tiles.setTileAt(tileLocation, tileKind.switchOn)
+        processNeighbors(tileLocation, turnWireOn)
+    } else if (tile == tileKind.switchOn) {
+        tiles.setTileAt(tileLocation, tileKind.switchOff)
+        processNeighbors(tileLocation, turnWireOff)
+    }
+ })
+ game.onUpdateInterval(1000, function () {
+    if (tiles.getTilesByType(tileKind.lightOff).length > 0)
+        return
+    level += 1
+    initializeStage(level)
+ })
+ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    tiles.setTileAt(cursor.tilemapLocation(), tileKind.lightOn)
+ })
+ initializeStage(level)`, 
+  "29-5-2": ` let tilemapLevel = assets.tilemap\`ステージa\`
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+ let level = 0
+ let cursor = sprites.create(assets.image\`cursor\`)
+ let cursorColumn = 0
+ let cursorRow = 0
+ enum Direction {
+    Left,
+    Down,
+    Up,
+    Right,
+ }
+ function getLocationInDirection(location: tiles.Location, direction: Direction) {
+    if (direction == Direction.Left)
+        return tiles.getTileLocation(location.column - 1, location.row)
+    if (direction == Direction.Down)
+        return tiles.getTileLocation(location.column, location.row + 1)
+    if (direction == Direction.Up)
+        return tiles.getTileLocation(location.column, location.row - 1)
+    if (direction == Direction.Right)
+        return tiles.getTileLocation(location.column + 1, location.row)
+    return null
+ }
+ function getNeighboringLocations(location: tiles.Location) {
+    let neighboringLocations = []
+    neighboringLocations.push(getLocationInDirection(location, Direction.Left))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Down))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Up))
+    neighboringLocations.push(getLocationInDirection(location, Direction.Right))
+    return neighboringLocations
+  }
+ function processNeighbors(location: tiles.Location, callback: (location: tiles.Location) => void) {
+  for (const neighboringLocation of getNeighboringLocations(location))
+         callback(neighboringLocation)
+ }
+ let tileKind = {
+     wireOff: assets.tile\`wireOff\`,
+     wireOn: assets.tile\`wireOn\`,
+     lightOff: assets.tile\`lightOff\`,
+     lightOn: assets.tile\`lightOn\`,
+     switchOff: assets.tile\`switchOff\`,
+     switchOn: assets.tile\`switchOn\`,
+     logicNotGate: assets.tile\`logicNotGate\`,
+     logicAndGate: assets.tile\`logicAndGate\`,
+     logicOrGate: assets.tile\`logicOrGate\`,
+ }
+ function initializeStage(level: number) {
+     let levels = [assets.tilemap\`ステージa\`,
+                   assets.tilemap\`ステージb\`,
+                   assets.tilemap\`ステージc\`,
+                   assets.tilemap\`ステージd\`,
+                   assets.tilemap\`ステージe\`,
+                   assets.tilemap\`ステージf\`]
+ if (level >= levels.length)
+         game.over(true)
+ let tilemapLevel = levels[level]
+ let tilemapWidth = tilemapLevel.width
+ let tilemapHeight = tilemapLevel.height
+     scene.setTileMapLevel(tilemapLevel)
+ for (let r = 0; r < tilemapHeight - 1; ++r)
+ for (let c = 0; c < tilemapWidth - 1; ++c)
+             performLogicGate(tiles.getTileLocation(c, r))
+ }
+ game.onUpdate(function () {
+    cursorColumn = Math.clamp(0, tilemapWidth - 1, cursorColumn)
+    cursorRow = Math.clamp(0, tilemapHeight - 1, cursorRow)
+    tiles.placeOnTile(cursor, tiles.getTileLocation(cursorColumn, cursorRow))
+ })
+ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn -= 1
+ })
+ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow += 1
+ })
+ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorRow -= 1
+ })
+ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    cursorColumn += 1
+ })
+ function turnWireOn(location: tiles.Location) {
+    if (location.getImage() != tileKind.wireOff)
+        return
+    tiles.setTileAt(location, tileKind.wireOn)
+    processNeighbors(location, turnOn)
+    processNeighbors(location, performLogicGate)
+ }
+ function turnWireOff(location: tiles.Location) {
+    if (location.getImage() != tileKind.wireOn)
+        return
+    tiles.setTileAt(location, tileKind.wireOff)
+    processNeighbors(location, turnOff)
+    processNeighbors(location, performLogicGate)
+ }
+ function turnlightOn(location: tiles.Location) {
+    if (location.getImage() != tileKind.lightOff)
+        return
+    tiles.setTileAt(location, tileKind.lightOn)
+ }
+ function turnlightOff(location: tiles.Location) {
+    if (location.getImage() != tileKind.lightOn)
+        return
+    tiles.setTileAt(location, tileKind.lightOff)
+ }
+ function turnOn(location: tiles.Location) {
+    turnWireOn(location)
+    turnlightOn(location)
+ }
+ function turnOff(location: tiles.Location) {
+    turnWireOff(location)
+    turnlightOff(location)
+ }
+ function isOnAt(location: tiles.Location) {
+    let tile = location.getImage()
+    if (tile == tileKind.switchOn)
+        return true
+    if (tile == tileKind.wireOn)
+        return true
+    return false
+ }
+ function performLogicNotGate(location: tiles.Location) {
+    if (location.getImage() != tileKind.logicNotGate)
+        return
+    let outputLocation = getLocationInDirection(location, Direction.Right)
+    if (isOnAt(getLocationInDirection(location, Direction.Left)))
+        turnOff(outputLocation)
+    else
+        turnOn(outputLocation)
+ }
+ function performLogicAndGate(location: tiles.Location) {
+    if (location.getImage() != tileKind.logicAndGate)
+        return
+    let input1 = isOnAt(getLocationInDirection(location, Direction.Up))
+    let input2 = isOnAt(getLocationInDirection(location, Direction.Down))
+    let outputLocation = getLocationInDirection(location, Direction.Right)
+    if (input1 && input2)
+        turnOn(outputLocation)
+    else
+        turnOff(outputLocation)
+ }
+ function performLogicOrGate(location: tiles.Location) {
+    if (location.getImage() != tileKind.logicOrGate)
+        return
+    let input1 = isOnAt(getLocationInDirection(location, Direction.Up))
+ }
+ let input2 = isOnAt(getLocationInDirection(location, Direction.Down))
+ let outputLocation = getLocationInDirection(location, Direction.Right)
+ if (input1 || input2)
+         turnOn(outputLocation)
+ else
+         turnOff(outputLocation)
+ function performLogicGate(location: tiles.Location) {
+     performLogicNotGate(location)
+     performLogicAndGate(location)
+     performLogicOrGate(location)
+ }
+ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+ let tileLocation = cursor.tilemapLocation()
+ let tile = tileLocation.getImage()
+ if (tile == tileKind.switchOff) {
+         tiles.setTileAt(tileLocation, tileKind.switchOn)
+         processNeighbors(tileLocation, turnWireOn)
+     } 
+ else if (tile == tileKind.switchOn) {
+         tiles.setTileAt(tileLocation, tileKind.switchOff)
+         processNeighbors(tileLocation, turnWireOff)
+     }
+ })
+ game.onUpdateInterval(1000, function () {
+ if (tiles.getTilesByType(tileKind.lightOff).length > 0)
+ return
+     level += 1
+     initializeStage(level)
+ })
+ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+     tiles.setTileAt(cursor.tilemapLocation(), tileKind.lightOn)
+ })
+ initializeStage(level)`, 
   "29-5-3": ``, 
 
 };
